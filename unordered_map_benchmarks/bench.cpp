@@ -25,6 +25,13 @@ public:
 		auto find = data.find(key);
 		return find != data.end() ? &find->second : nullptr;
 	}
+
+	/**
+	 * Just a minor hack to get the amount of elements stored for the output
+	 */
+	size_t size() const {
+		return data.size();
+	}
 };
 
 /**
@@ -106,7 +113,7 @@ struct ExampleKeyRange{
 	};
 
 	ExampleKey upper{
-		100, 100, 50
+		100, 10, 50
 	};
 
 	void increment(ExampleKey& k){
@@ -164,7 +171,7 @@ int main(){
 			(void) unused_stuff;
 		}
 		auto stop = std::chrono::steady_clock::now();
-		return stop - start;
+		return std::make_pair(stop - start, map.size());
 	}();
 
 	auto duration_indexed = [](){
@@ -192,7 +199,7 @@ int main(){
 		return std::make_pair(stop - start, stop_fast - start_fast);
 	}();
 
-	auto dur_simple_count = duration_simple.count();
+	auto dur_simple_count = duration_simple.first.count();
 	auto dur_index_count = duration_indexed.first.count();
 	auto dur_index_fast_count = duration_indexed.second.count();
 
@@ -200,6 +207,7 @@ int main(){
 	double perc_index = dur_index_count / base_simple;
 	double perc_index_fast = dur_index_fast_count / base_simple;
 
+	std::cout<<"Amount of elements: "<<duration_simple.second<<'\n';
 	std::cout<<"Time in ns\n"<<std::setw(16)<<dur_simple_count<<std::setw(16)<<dur_index_count<<std::setw(16)<<dur_index_fast_count<<'\n';
 	std::cout<<std::setw(16)<<"100%"<<std::setw(15)<<perc_index<<std::setw(1)<<"%"<<std::setw(15)<<perc_index_fast<<std::setw(1)<<'%'<<std::endl;
 
