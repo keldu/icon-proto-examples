@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <optional>
 #include <unordered_map>
@@ -105,7 +106,7 @@ struct ExampleKeyRange{
 	};
 
 	ExampleKey upper{
-		100, 100, 50
+		100, 10, 50
 	};
 
 	void increment(ExampleKey& k){
@@ -199,8 +200,8 @@ int main(){
 	double perc_index = dur_index_count / base_simple;
 	double perc_index_fast = dur_index_fast_count / base_simple;
 
-	std::cout<<"Time\n"<<dur_simple_count<<'\t'<<dur_index_count<<'\t'<<dur_index_fast_count<<'\n';
-	std::cout<<"100%\t\t"<<perc_index<<"%\t"<<perc_index_fast<<'%'<<std::endl;
+	std::cout<<"Time in ns\n"<<std::setw(16)<<dur_simple_count<<std::setw(16)<<dur_index_count<<std::setw(16)<<dur_index_fast_count<<'\n';
+	std::cout<<std::setw(16)<<"100%"<<std::setw(15)<<perc_index<<std::setw(1)<<"%"<<std::setw(15)<<perc_index_fast<<std::setw(1)<<'%'<<std::endl;
 
 	return 0;
 }

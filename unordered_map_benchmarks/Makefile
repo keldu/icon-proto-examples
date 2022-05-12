@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-CXX ?= clang++
+CXX=clang++
 
 bench:
 	mkdir -p build
