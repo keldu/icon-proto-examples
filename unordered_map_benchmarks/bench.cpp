@@ -113,7 +113,7 @@ struct ExampleKeyRange{
 	};
 
 	ExampleKey upper{
-		100, 10, 50
+		100, 100, 50
 	};
 
 	void increment(ExampleKey& k){
@@ -210,7 +210,7 @@ int main(){
 	constexpr size_t column = 32;
 	std::cout<<"Amount of elements: "<<duration_simple.second<<'\n';
 	std::cout<<"Time in ns\n";
-	std::cout<<std::setw(column)<<"Regular Map"<<std::setw(column)<<"Index Map"<<std::setw(column)<<"Index Map with ID access"<<"\n";
+	std::cout<<std::setw(column)<<"Regular Hash Map"<<std::setw(column)<<"Index Hash Map"<<std::setw(column)<<"Index Hash Map with ID access"<<"\n";
 	std::cout<<std::setw(column)<<dur_simple_count<<std::setw(column)<<dur_index_count<<std::setw(column)<<dur_index_fast_count<<'\n';
 	std::cout<<std::setw(column)<<"100%"<<std::setw(column-1)<<perc_index<<std::setw(1)<<"%"<<std::setw(column-1)<<perc_index_fast<<std::setw(1)<<'%'<<std::endl;
 
