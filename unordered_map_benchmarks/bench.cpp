@@ -106,7 +106,7 @@ struct ExampleKeyRange{
 	};
 
 	ExampleKey upper{
-		100, 10, 50
+		100, 100, 50
 	};
 
 	void increment(ExampleKey& k){
