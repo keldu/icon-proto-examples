@@ -10,3 +10,10 @@ Time in ns
                        262562920                       262572644                           93491
                             100%                        100.004%                      0.0356071%
 ```
+```
+Amount of elements: 112210
+Time in ns
+                     Regular Map                       Index Map        Index Map with ID access
+                       257532845                       255340067                           74469
+                            100%                        99.1485%                      0.0289163%
+```
