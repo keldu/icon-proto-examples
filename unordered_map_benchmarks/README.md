@@ -7,6 +7,7 @@ Only concerning single thread operations.
 
 ## Benchmarks  
 
+### Debug build  
 ```
 Amount of elements: 112210
 Time in ns
@@ -34,4 +35,12 @@ Time in ns
                 Regular Hash Map                  Index Hash Map   Index Hash Map with ID access
                      65742156922                     67014876284                          663718
                             100%                        101.936%                     0.00100958%
+```
+### Optimized build  
+```
+Amount of elements: 1030300
+Time in ns
+                Regular Hash Map                  Index Hash Map   Index Hash Map with ID access
+                     66502472937                     70462922806                          308658
+                            100%                        105.955%                     0.00046413%
 ```
