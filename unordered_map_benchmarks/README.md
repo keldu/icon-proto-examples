@@ -1,7 +1,11 @@
-# Minor benchmark tests  
+# Comparison of an indexed hash map and a regular hash map  
 
 This benchmark generally is a bit shakey.  
 On my system clang++ doesn't optimize the simple map access. g++ does.  
+
+Only concerning single thread operations.  
+
+## Benchmarks  
 
 ```
 Amount of elements: 112210
