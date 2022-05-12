@@ -99,6 +99,8 @@ struct ExampleKey {
 
 /**
  * Just so a Value exists
+ * You can always build indexes based on the entries in here.
+ * There's nothing stopping you :)
  */
 struct ExampleValue {
 	uint16_t value;
