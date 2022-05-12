@@ -207,9 +207,12 @@ int main(){
 	double perc_index = dur_index_count / base_simple;
 	double perc_index_fast = dur_index_fast_count / base_simple;
 
+	constexpr size_t column = 32;
 	std::cout<<"Amount of elements: "<<duration_simple.second<<'\n';
-	std::cout<<"Time in ns\n"<<std::setw(16)<<dur_simple_count<<std::setw(16)<<dur_index_count<<std::setw(16)<<dur_index_fast_count<<'\n';
-	std::cout<<std::setw(16)<<"100%"<<std::setw(15)<<perc_index<<std::setw(1)<<"%"<<std::setw(15)<<perc_index_fast<<std::setw(1)<<'%'<<std::endl;
+	std::cout<<"Time in ns\n";
+	std::cout<<std::setw(column)<<"Regular Map"<<std::setw(column)<<"Index Map"<<std::setw(column)<<"Index Map with ID access"<<"\n";
+	std::cout<<std::setw(column)<<dur_simple_count<<std::setw(column)<<dur_index_count<<std::setw(column)<<dur_index_fast_count<<'\n';
+	std::cout<<std::setw(column)<<"100%"<<std::setw(column-1)<<perc_index<<std::setw(1)<<"%"<<std::setw(column-1)<<perc_index_fast<<std::setw(1)<<'%'<<std::endl;
 
 	return 0;
 }

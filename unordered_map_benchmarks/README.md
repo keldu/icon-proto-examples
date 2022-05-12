@@ -6,6 +6,7 @@ On my system clang++ doesn't optimize the simple map access. g++ does.
 ```
 Amount of elements: 112210
 Time in ns
-       259251637       251841165           72877
-            100%        97.1416%      0.0281105%
+                     Regular Map                       Index Map        Index Map with ID access
+                       262562920                       262572644                           93491
+                            100%                        100.004%                      0.0356071%
 ```
