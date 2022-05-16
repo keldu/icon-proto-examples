@@ -7,11 +7,15 @@
 
 namespace imb {
 
+/**
+ * Collection of variables
+ */
 template<typename T>
 class var_collection {
 public:
 	class builder {
 	public:
+		void add_var();
 	private:
 		var_collection collection;
 	};
@@ -20,7 +24,9 @@ public:
 	/**
 	 * size of the collection
 	 */
-	size_t size() const;
+	size_t size() const {
+		return data.size();
+	}
 
 	/**
 	 * templated lambda function pass for the iteration
@@ -65,6 +71,7 @@ public:
 	 */
 	var_collection filter(std::function<bool(const T&)>&& func);
 private:
-	std::vector<T> data;
+	std::vector<size_t> data;
+
 };
 }

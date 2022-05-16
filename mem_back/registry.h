@@ -3,13 +3,19 @@
 #include <tuple>
 #include <vector>
 
+#include "var_collection.h"
+
 namespace imb {
 
 template<typename... DataDescriptor>
 class registry {
 public:
+	template<typename Desc>
+	var_collection<Desc> global_collection() const;
+
+
 private:
-	std::vector<std::tuple<DataDescriptor....>> data;
+	std::tuple<std::vector<DataDescriptor>...> data;
 };
 
 template<typename Key, typename... DataDescriptor>
