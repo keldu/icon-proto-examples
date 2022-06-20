@@ -2,6 +2,11 @@
 
 #include "registry.h"
 
+#include <string>
+#include <variant>
+#include <map>
+#include <memory>
+
 namespace imb {
 
 template<typename Key, typename DataDescriptor>
@@ -27,8 +32,8 @@ public:
 	/**
 	 * Add a variable to the registry itself
 	 */
-	size_t add_var(const Key& key, DataDescriptor& var){
-		size_t id = registry.add_var(var);
+	size_t add_var(const Key& key, DataDescriptor&& var){
+		size_t id = registry.add_var(std::move(var));
 		
 		index.add_index(key, id);
 
@@ -73,13 +78,14 @@ public:
 	DataDescriptor& at(size_t id) {
 		return  registry.at(id);
 	}
-
-	//
-private:
+public:
+	/**
+	 * Shouldn't be public
+	 */
 	registry<DataDescriptor> registry;
 	registry_index<Key,DataDescriptor> index;
 
-	friend class keyed_collection_builder<Key,DataDescriptor>;
+	friend class keyed_var_collection<Key,DataDescriptor>;
 };
 
 /**
@@ -96,7 +102,7 @@ class keyed_registry_tuple{
 	/**
 	 * Sadly this is necessary, because a simple false would trigger the assert even when no instantiation of this general case is created
 	 */
-	static_assert(always_false<T...>, "Template case not supported");
+	static_assert(always_false<T...>, "Template not supported");
 };
 
 template<typename Key, typename Value>
@@ -122,5 +128,35 @@ class keyed_registry_tuple<Key, DataDesc...> {
 public:
 private:
 	std::tuple<keyed_registry<Key, DataDesc>...> registries;
+};
+
+template<typename Key, typename... DataDesc>
+class keyed_registry_map {
+public:
+	using keyed_registry_variant = std::variant<keyed_registry<Key,DataDesc>...>;
+
+	keyed_registry_variant* find_registry_variant(const std::string& name){
+		auto find = mapped_registries.find(name);
+
+		if(find != mapped_registries.end()){
+			return find->second.get();
+		}
+
+		return nullptr;
+	}
+
+	template<typename D>
+	bool add_registry(const std::string& key_name){
+		auto ptr = std::make_unique<keyed_registry_variant>();
+		ptr->template emplace<keyed_registry<Key,D>>();
+
+		auto inserted = mapped_registries.emplace(std::make_pair(
+			key_name, std::move(ptr)
+		));
+		
+		return inserted.second;
+	}
+private:
+	std::map<std::string, std::unique_ptr<keyed_registry_variant>> mapped_registries;
 };
 }
