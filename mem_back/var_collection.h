@@ -246,7 +246,24 @@ public:
 
 		return filtered;
 	}
-	
+
+	/**
+	 * concat function with another collection
+	 */
+	keyed_var_collection concat(keyed_var_collection<K,T>& other){
+		auto cloned = clone();
+
+		std::copy_if(other.data.begin(), other.data.end(), std::back_inserter(cloned.data), [&cloned](const std::pair<K,size_t>& ind){
+			for(auto& iter : cloned.data){
+				if(ind.second == iter.second){
+					return false;
+				}
+			}
+			return true;
+		});
+		
+		return cloned;
+	}
 private:
 	registry<T>& registry;
 	registry_index<K, T>& index;

@@ -77,6 +77,16 @@ void multi_registry_setup(){
 			std::cout<<"Key: "<<key<<" Value: "<<value<<std::endl;
 		});
 
+		// Concat two functions
+		std::cout<<"\nConcat collection\n\n";
+
+		auto filter_sort_collection = sorted_collection.filter([](const std::pair<uint32_t,float>& val){
+			return val.second > 2.4 && val.second < 7.0;
+		});
+		auto concat_collection = filter_sort_collection.concat(filtered_collection);
+		concat_collection.for_each([](uint32_t key, float value){
+			std::cout<<"Key: "<<key<<" Value: "<<value<<std::endl;
+		});
 	}
 
 
