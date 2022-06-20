@@ -149,6 +149,21 @@ public:
 
 		return filtered;
 	}
+	
+	var_collection concat(var_collection<T>& other){
+		auto cloned = clone();
+
+		std::copy_if(other.data.begin(), other.data.end(), std::back_inserter(cloned.data), [&cloned](const size_t& ind){
+			for(auto& iter : cloned.data){
+				if(ind == iter){
+					return false;
+				}
+			}
+			return true;
+		});
+		
+		return cloned;
+	}
 private:
 	registry<T>& registry;
 
