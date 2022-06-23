@@ -12,7 +12,7 @@ using dynamic_registry_map = keyed_registry_map<var_location,
 	
 	uint8_t, uint16_t, uint32_t, uint64_t,
 	int8_t, int16_t, int32_t, int64_t,
-	float, double/*,
+	float, double,
 
 	std::array<uint8_t,2>, std::array<uint8_t,3>, std::array<uint8_t,4>,
 	std::array<uint16_t,2>, std::array<uint16_t,3>, std::array<uint16_t,4>,
@@ -26,7 +26,6 @@ using dynamic_registry_map = keyed_registry_map<var_location,
 	
 	std::array<float,2>, std::array<float,3>, std::array<float,4>,
 	std::array<double,2>, std::array<double,3>, std::array<double,4>
-*/
 >;
 }
 
