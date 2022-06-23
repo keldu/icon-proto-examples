@@ -2,9 +2,23 @@
 
 #include <string>
 
+#include <iostream>
 #include <cstdint>
 
 namespace imb {
+
+class var_location {
+public:
+	int32_t jg;
+	int32_t hgrid_id;
+	int32_t vgrid_id;
+	int32_t time_id;
+
+	bool operator==(const var_location& rhs) const {
+		return jg == rhs.jg && hgrid_id == rhs.hgrid_id && vgrid_id == rhs.vgrid_id && time_id;
+	}
+};
+
 /**
  * Personally I don't like the string here.
  * The only thing that describes a type is the string.
@@ -17,9 +31,37 @@ namespace imb {
 class var_descriptor {
 private:
 	std::string name;
-	int32_t jg;
-	int32_t hgrid_id;
-	int32_t vgrid_id;
-	int32_t time_id;
+	var_location location;
+	
 };
+
+std::ostream& operator<<(std::ostream& os, const var_location& loc){
+	os<<loc.jg<<" "<<loc.hgrid_id<<" "<<loc.vgrid_id<<" "<<loc.time_id;
+	return os;
+}
+}
+namespace std {
+
+template<>
+struct hash<imb::var_location> {
+	template<typename T>
+	static void hash_combine(std::size_t& seed, const T& v){
+
+		seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+	}
+
+	std::size_t operator()(const imb::var_location& k) const {
+		using std::size_t;
+
+		size_t seed = 0;
+		size_t hash{};
+		hash_combine<int32_t>(seed, k.jg);
+		hash_combine<int32_t>(seed, k.hgrid_id);
+		hash_combine<int32_t>(seed, k.vgrid_id);
+		hash_combine<int32_t>(seed, k.time_id);
+
+		return seed;
+	}
+};
+
 }
