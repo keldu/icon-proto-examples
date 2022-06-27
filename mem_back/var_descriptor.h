@@ -29,7 +29,7 @@ public:
  * Should be faster as well.
  */
 class var_descriptor {
-private:
+public:
 	std::string name;
 	var_location location;
 	

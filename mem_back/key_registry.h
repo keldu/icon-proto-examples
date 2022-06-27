@@ -146,6 +146,16 @@ public:
 	}
 
 	template<typename D>
+	keyed_registry<Key,D>* find_registry(const std::string& name){
+		keyed_registry_variant* reg_var = find_registry_variant(name);
+		if(!reg_var){
+			return nullptr;
+		}
+
+		return &std::get<keyed_registry<Key,D>>(*reg_var);
+	}
+
+	template<typename D>
 	bool add_registry(const std::string& key_name){
 		auto ptr = std::make_unique<keyed_registry_variant>();
 		ptr->template emplace<keyed_registry<Key,D>>();

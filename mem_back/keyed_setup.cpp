@@ -1,13 +1,21 @@
 #include "var_descriptor.h"
 #include "key_registry.h"
+#include "descriptor_registry.h"
 
 #include <array>
 #include <string>
 #include <iostream>
 
 namespace imb {
+
+template<typename... T>
+struct registry_types {
+	using keyed = keyed_registry_map<var_location, T...>;
+
+	using descriptor = descriptor_registry_map<T...>;
+};
 // Technically the var descriptor should be here or my variant since the registry description acts as an internal 
-using dynamic_registry_map = keyed_registry_map<var_location,
+using dynamic_registries = registry_types<
 	std::string,
 	
 	uint8_t, uint16_t, uint32_t, uint64_t,
@@ -27,6 +35,8 @@ using dynamic_registry_map = keyed_registry_map<var_location,
 	std::array<float,2>, std::array<float,3>, std::array<float,4>,
 	std::array<double,2>, std::array<double,3>, std::array<double,4>
 >;
+
+using dynamic_registry_map = dynamic_registries::keyed;
 }
 
 void simple_keyed_setup(){
@@ -57,12 +67,12 @@ void multi_registry_setup(){
 
 		registry_map.add_registry<float>("temperature");
 
-		auto registry_ptr = registry_map.find_registry_variant("temperature");
+		auto registry_ptr = registry_map.template find_registry<float>("temperature");
 		if(!registry_ptr){
 			return;
 		}
-		auto& registry_var = *registry_ptr;
-		auto& registry = std::get<imb::keyed_registry<imb::var_location,float>>(registry_var);
+		auto& registry = *registry_ptr;
+		// auto& registry = std::get<imb::keyed_registry<imb::var_location,float>>(registry_var);
 
 		auto builder = create_keyed_collection_builder(registry);
 
@@ -114,6 +124,18 @@ void multi_registry_setup(){
 
 }
 
+void multi_descriptor_setup(){
+	imb::dynamic_registries::descriptor registry_map;
+	{
+		std::cout<<"Temperature test"<<std::endl;
+
+		registry_map.add_registry<float>("temperature");
+
+		// auto 
+
+	}
+}
+
 int main(){
 	std::cout<<"\n## Simple setup ##\n"<<std::endl;
 
@@ -121,6 +143,9 @@ int main(){
 	
 	std::cout<<"\n## Multi registry ##\n"<<std::endl;
 	multi_registry_setup();
+	
+	std::cout<<"\n## Multi descriptor registry ##\n"<<std::endl;
+	multi_descriptor_setup();
 	
 	return 0;
 }
