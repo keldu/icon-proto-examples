@@ -130,12 +130,15 @@ private:
 	std::tuple<keyed_registry<Key, DataDesc>...> registries;
 };
 
+/**
+ * Dynamic variant of the registry tuple
+ */
 template<typename Key, typename... DataDesc>
 class keyed_registry_map {
 public:
-	using keyed_registry_variant = std::variant<keyed_registry<Key,DataDesc>...>;
+	using keyed_registry_variant = std::variant<keyed_registry<Key,DataDesc>*...>;
 
-	keyed_registry_variant* find_registry_variant(const std::string& name){
+	keyed_registry_variant find_registry_variant(const std::string& name){
 		auto find = mapped_registries.find(name);
 
 		if(find != mapped_registries.end()){

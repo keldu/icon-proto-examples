@@ -8,25 +8,34 @@
 
 namespace imb {
 
+/**
+ * The registry which
+ */ 
 template<typename... T>
 class descriptor_registry_map {
 public:
 	using keyed_registry_variant = typename keyed_registry_map<var_location,T...>::keyed_registry_variant;
 
 	/**
-	 *
+	 * find a registry
 	 */
-	keyed_registry_variant* find_registry_variant(const std::string& name){
+	keyed_registry_variant find_registry_variant(const std::string& name){
 		return maps.find_registry_variant(name);
 	}
+	
+	/**
+	 * find a registry
+	 */
+	keyed_registry<var_location, 
 
 	/**
-	 * 
+	 * find a var
 	 */
 	std::variant<T*...> find_variant_variable(const var_descriptor& desc){
 		keyed_registry_variant* registry = maps.find_registry_variant(desc.name);
 
 		if(!registry){
+			// Well. Nullopt kinda wrong here :P
 			return std::nullopt;
 		}
 
@@ -37,7 +46,7 @@ public:
 	}
 
 	/**
-	 *
+	 * find a var if you already know what kind of var it is
 	 */
 	template<typename D>
 	D* find_variable(const var_descriptor& desc){
@@ -58,6 +67,19 @@ public:
 	template<typename D>
 	bool add_registry(const std::string& key_name){
 		return maps.template add_registry<D>(key_name);
+	}
+
+	/**
+	 * add var
+	 */
+	template<typename D>
+	uint64_t add_var(const var_descriptor& desc, const D& value){
+		auto find_reg = find_registry_variant(desc.name);
+		if(false){
+
+		}
+
+		return 0;
 	}
 
 private:
