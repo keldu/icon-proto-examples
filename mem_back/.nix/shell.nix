@@ -1,9 +1,7 @@
 with import <nixpkgs> {};
 
-stdenv.mkDerivation {
-  name = "icon-memory-backend-dev";
-  buildInputs = [ gnumake clang_12 clang-tools ];
-
-  buildPhase = ''
-  '';
-}
+{ pkgs ? import <nixpkgs> {} }:
+  pkgs.mkShell {
+    name = "icon-memory-backend-dev";
+    nativeBuildInputs = [ gnumake clang_12 clang-tools ];
+  }
