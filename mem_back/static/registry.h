@@ -3,7 +3,7 @@
 #include <tuple>
 #include <vector>
 
-#include "var_collection.h"
+#include "../var_collection.h"
 
 namespace imb {
 

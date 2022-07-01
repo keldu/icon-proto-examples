@@ -1,4 +1,4 @@
-#include "./registry.h"
+#include "./static/registry.h"
 
 #include <iostream>
 

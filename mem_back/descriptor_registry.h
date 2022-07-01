@@ -1,6 +1,7 @@
 #pragma once
 
 #include "key_registry.h"
+#include "var_descriptor.h"
 
 #include <variant>
 #include <optional>

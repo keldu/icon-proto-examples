@@ -4,7 +4,7 @@ CXX=clang++
 CXXFLAGS=-std=c++17 -DNDEBUG -O3 
 #CXXFLAGS=-std=c++17 -g
 
-all: basic keyed
+all: basic keyed descriptor
 
 build_dir:
 	mkdir -p build
@@ -14,6 +14,9 @@ basic: basic_setup.cpp build_dir
 
 keyed: keyed_setup.cpp build_dir
 	${CXX} ${CXXFLAGS} -o build/keyed_setup keyed_setup.cpp
+
+descriptor: descriptor_setup.cpp build_dir
+	${CXX} ${CXXFLAGS} -o build/descriptor_setup descriptor_setup.cpp
 
 clean:
 	rm -rf build
