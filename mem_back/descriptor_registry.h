@@ -74,6 +74,7 @@ public:
 
 	/**
 	 * add var
+	 * Basically needs a collection builder for this case
 	 */
 	template<typename D>
 	uint64_t add_var(const var_descriptor& desc, const D& value){
