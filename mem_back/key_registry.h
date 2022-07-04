@@ -136,26 +136,31 @@ private:
 template<typename Key, typename... DataDesc>
 class keyed_registry_map {
 public:
-	using keyed_registry_variant = std::variant<keyed_registry<Key,DataDesc>*...>;
+	using keyed_registry_variant = std::variant<keyed_registry<Key,DataDesc>...>;
+	using keyed_registry_variant_ptr = std::variant<std::monostate,keyed_registry<Key,DataDesc>*...>;
 
-	keyed_registry_variant find_registry_variant(const std::string& name){
+	keyed_registry_variant_ptr find_registry_variant(const std::string& name){
 		auto find = mapped_registries.find(name);
 
 		if(find != mapped_registries.end()){
-			return find->second.get();
+			return std::visit(
+				[](auto&& arg) -> keyed_registry_variant_ptr{
+					return &arg;
+				}
+			, *(find->second));
 		}
 
-		return nullptr;
+		return std::monostate{};
 	}
 
 	template<typename D>
 	keyed_registry<Key,D>* find_registry(const std::string& name){
-		keyed_registry_variant* reg_var = find_registry_variant(name);
-		if(!reg_var){
+		keyed_registry_variant_ptr reg_var = find_registry_variant(name);
+		if(std::holds_alternative<std::monostate>(reg_var)){
 			return nullptr;
 		}
 
-		return &std::get<keyed_registry<Key,D>>(*reg_var);
+		return std::get<keyed_registry<Key,D>*>(reg_var);
 	}
 
 	template<typename D>
