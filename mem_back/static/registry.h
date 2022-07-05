@@ -7,47 +7,66 @@
 
 namespace imb {
 
-/**
- * A single registry
- */
 template<typename DataDescriptor>
 class registry {
 public:
-	/**
-	 * constructors
-	 */
-	registry() = default;
-
 	registry(registry<DataDescriptor>&&) = delete;
 	registry<DataDescriptor>& operator=(registry<DataDescriptor>&&) = delete;
 
 	registry(const registry&) = delete;
 	registry<DataDescriptor>& operator=(const registry<DataDescriptor>&) = delete;
 
-	var_collection<DataDescriptor> global_collection() {
+	virtual var_collection<DataDescriptor> global_collection() = 0;
+
+	DataDescriptor& at(size_t i) = 0;
+
+	const DataDescriptor& at(size_t i) = 0;
+
+	size_t add_var(const DataDescriptor& var) = 0;
+};
+
+namespace storage {
+struct regular {};
+}
+
+template<typename DataDescriptor, typename Storage = storage::regular>
+class registry_impl;
+
+/**
+ * A single registry
+ */
+template<typename DataDescriptor>
+class registry_impl<DataDescriptor, storage::regular> : public registry<DataDescriptor> {
+public:
+	/**
+	 * constructors
+	 */
+	registry() = default;
+
+	var_collection<DataDescriptor> global_collection() override {
 		return var_collection<DataDescriptor>{*this};
 	}
 
-	friend class var_collection<DataDescriptor>;
+	friend class var_collection<DataDescriptor,storage::regular>;
 
 	/**
 	 * get data at index
 	 */
-	DataDescriptor& at(size_t i){
+	DataDescriptor& at(size_t i) override {
 		return data.at(i);
 	}
 
 	/**
 	 * get data at index
 	 */
-	const DataDescriptor& at(size_t i) const {
+	const DataDescriptor& at(size_t i) const override {
 		return data.at(i);
 	}
 
 	/**
 	 * add data
 	 */
-	size_t add_var(const DataDescriptor& var){
+	size_t add_var(const DataDescriptor& var) override {
 		size_t index = data.size();
 		data.push_back(var);
 		return index;
@@ -56,11 +75,15 @@ private:
 	std::vector<DataDescriptor> data;
 };
 
+template<typename... DataDescriptors, typename Storage = storage::regular>
+class registry_tuple;
+
 /**
  * A tuple of registries for the ease of instantiation
+ * This type of class is mostly only useful if you have schemas to be honest
  */
 template<typename... DataDescriptors>
-class registry_tuple {
+class registry_tuple<DataDescriptor..., storage::regular> {
 public:
 	template<typename Descriptor>
 	var_collection<Descriptor> global_collection(){
