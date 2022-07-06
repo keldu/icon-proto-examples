@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-using global_registry = imb::registry_tuple<uint64_t>;
+using global_registry = imb::registry_tuple<imb::storage::regular,uint64_t>;
 
 int main(){
 	using namespace imb;

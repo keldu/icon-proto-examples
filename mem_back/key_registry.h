@@ -10,29 +10,56 @@
 namespace imb {
 
 template<typename Key, typename DataDescriptor>
-class keyed_registry {
+class i_keyed_registry {
+public:
+	i_keyed_registry() = default;
+	
+	i_keyed_registry(i_keyed_registry<Key,DataDescriptor>&&) = delete;
+	i_keyed_registry<Key, DataDescriptor>& operator=(i_keyed_registry<Key,DataDescriptor>&&) = delete;
+	
+	i_keyed_registry(const i_keyed_registry<Key,DataDescriptor>&) = delete;
+	i_keyed_registry<Key, DataDescriptor>& operator=(const i_keyed_registry<Key,DataDescriptor>&) = delete;
+	
+	virtual size_t add_var(const Key& key, DataDescriptor&& var) = 0;
+	
+	virtual std::optional<size_t> find_id(const Key& key) const = 0;
+	
+	virtual const DataDescriptor* find(const Key& key) const = 0;
+	
+	virtual DataDescriptor* find(const Key& key) = 0;
+	
+	virtual const DataDescriptor& at(size_t id) const = 0;
+	
+	virtual DataDescriptor& at(size_t id) = 0;
+
+	virtual i_registry<DataDescriptor>& internal_registry() = 0;
+
+	virtual i_registry_index<Key, DataDescriptor>& internal_registry_index() = 0;
+protected:
+	~i_keyed_registry() = default;
+
+	friend class keyed_var_collection<Key,DataDescriptor>;
+};
+
+template<typename Key, typename DataDescriptor, typename Storage = storage::regular>
+class keyed_registry;
+
+template<typename Key, typename DataDescriptor>
+class keyed_registry<Key, DataDescriptor, storage::regular> : public i_keyed_registry<Key,DataDescriptor>{
 public:
 	keyed_registry():
 		registry{},
 		index{registry}
 	{}
-
+	
 	var_collection<DataDescriptor> global_collection() {
 		return var_collection<DataDescriptor>{registry};
 	}
 
-	keyed_registry(keyed_registry<Key,DataDescriptor>&&) = delete;
-	keyed_registry<Key, DataDescriptor>& operator=(keyed_registry<Key,DataDescriptor>&&) = delete;
-	
-	keyed_registry(const keyed_registry<Key,DataDescriptor>&) = delete;
-	keyed_registry<Key, DataDescriptor>& operator=(const keyed_registry<Key,DataDescriptor>&) = delete;
-
-	
-
 	/**
 	 * Add a variable to the registry itself
 	 */
-	size_t add_var(const Key& key, DataDescriptor&& var){
+	size_t add_var(const Key& key, DataDescriptor&& var) override {
 		size_t id = registry.add_var(std::move(var));
 		
 		index.add_index(key, id);
@@ -43,13 +70,13 @@ public:
 	/**
 	 * One might try to find ids based on the keys and use that.
 	 */
-	std::optional<size_t> find_id(const Key& key) const {
+	std::optional<size_t> find_id(const Key& key) const override {
 		std::optional<size_t> id = index.find(key);
 
 		return id;
 	}
 
-	const DataDescriptor* find(const Key& key) const {
+	const DataDescriptor* find(const Key& key) const override {
 		std::optional<size_t> id = index.find(key);
 		if(!id.has_value()){
 			return nullptr;
@@ -60,7 +87,7 @@ public:
 		return &data;
 	}
 
-	DataDescriptor* find(const Key& key){
+	DataDescriptor* find(const Key& key) override {
 		std::optional<size_t> id = index.find(key);
 		if(!id.has_value()){
 			return nullptr;
@@ -71,21 +98,27 @@ public:
 		return &data;
 	}
 
-	const DataDescriptor& at(size_t id) const {
-		return  registry.at(id);
+	const DataDescriptor& at(size_t id) const override {
+		return registry.at(id);
 	}
 
-	DataDescriptor& at(size_t id) {
-		return  registry.at(id);
+	DataDescriptor& at(size_t id) override {
+		return registry.at(id);
+	}
+	
+	i_registry<DataDescriptor>& internal_registry() override {
+		return registry;
+	};
+
+	i_registry_index<Key, DataDescriptor>& internal_registry_index() override{
+		return index;
 	}
 public:
 	/**
 	 * Shouldn't be public
 	 */
-	registry<DataDescriptor> registry;
-	registry_index<Key,DataDescriptor> index;
-
-	friend class keyed_var_collection<Key,DataDescriptor>;
+	registry<DataDescriptor, storage::regular> registry;
+	registry_index<Key,DataDescriptor, storage::regular> index;
 };
 
 /**

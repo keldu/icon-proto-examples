@@ -9,10 +9,10 @@
 namespace imb {
 
 template<typename T>
-class registry;
+class i_registry;
 
 template<typename K, typename T>
-class registry_index;
+class i_registry_index;
 
 /**
  * Collection of variables
@@ -25,7 +25,7 @@ public:
 	 */
 	class builder {
 	public:
-		builder(registry<T>& registry):
+		builder(i_registry<T>& registry):
 			collection{registry}
 		{}
 
@@ -47,7 +47,7 @@ public:
 	/**
 	 * constructor
 	 */
-	var_collection(registry<T>& registry_):
+	var_collection(i_registry<T>& registry_):
 		registry{registry_}
 	{}
 
@@ -165,13 +165,13 @@ public:
 		return cloned;
 	}
 private:
-	registry<T>& registry;
+	i_registry<T>& registry;
 
 	std::vector<size_t> data;
 };
 
 template<typename T>
-typename var_collection<T>::builder create_collection_builder(registry<T>& registry){
+typename var_collection<T>::builder create_collection_builder(i_registry<T>& registry){
 	return {registry};
 }
 
@@ -184,7 +184,7 @@ class keyed_var_collection {
 public:
 	class builder {
 	public:
-		builder(registry<T>& registry_, registry_index<K,T>& index_):
+		builder(i_registry<T>& registry_, i_registry_index<K,T>& index_):
 			collection{registry_, index_}
 		{}
 
@@ -205,7 +205,7 @@ public:
 	/**
 	 * Constructor
 	 */
-	keyed_var_collection(registry<T>& registry_, registry_index<K,T>& index_):
+	keyed_var_collection(i_registry<T>& registry_, i_registry_index<K,T>& index_):
 		registry{registry_},
 		index{index_}
 	{}
@@ -280,8 +280,8 @@ public:
 		return cloned;
 	}
 private:
-	registry<T>& registry;
-	registry_index<K, T>& index;
+	i_registry<T>& registry;
+	i_registry_index<K, T>& index;
 
 	std::vector<std::pair<K,size_t>> data;
 
@@ -296,15 +296,15 @@ private:
 };
 
 template<typename K, typename T>
-typename keyed_var_collection<K, T>::builder create_keyed_collection_builder(registry<T>& registry_, registry_index<K,T>& registry_index_){
+typename keyed_var_collection<K, T>::builder create_keyed_collection_builder(i_registry<T>& registry_, i_registry_index<K,T>& registry_index_){
 	return {registry_, registry_index_};
 }
 
 template<typename K, typename T>
-class keyed_registry;
+class i_keyed_registry;
 
 template<typename K, typename T>
-typename keyed_var_collection<K, T>::builder create_keyed_collection_builder(keyed_registry<K,T>& registry_){
-	return {registry_.registry, registry_.index};
+typename keyed_var_collection<K, T>::builder create_keyed_collection_builder(i_keyed_registry<K,T>& registry_){
+	return {registry_.internal_registry(), registry_.internal_registry_index()};
 }
 }
