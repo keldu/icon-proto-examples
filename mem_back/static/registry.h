@@ -127,7 +127,8 @@ class registry_index;
 template<typename Key, typename DataDescriptor>
 class registry_index<Key, DataDescriptor, storage::regular> : public i_registry_index<Key,DataDescriptor> {
 public:
-	registry_index(registry<DataDescriptor>& data_):
+	// This could be any type though
+	registry_index(registry<DataDescriptor, storage::regular>& data_):
 		data{data_}{}
 
 	void add_index(const Key& key, size_t id) override {
@@ -143,7 +144,7 @@ public:
 		return std::nullopt;
 	}
 private:
-	registry<DataDescriptor>& data;
+	registry<DataDescriptor,storage::regular>& data;
 	std::unordered_map<Key, size_t> index;
 };
 }
