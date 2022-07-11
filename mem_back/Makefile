@@ -18,5 +18,8 @@ keyed: keyed_setup.cpp build_dir
 descriptor: descriptor_setup.cpp build_dir
 	${CXX} ${CXXFLAGS} -o build/descriptor_setup descriptor_setup.cpp
 
+cuda: cuda/setup.cpp build_dir
+	${CXX} ${CXXFLAGS} -o build/cuda_setup cuda/setup.cpp
+
 clean:
 	rm -rf build
