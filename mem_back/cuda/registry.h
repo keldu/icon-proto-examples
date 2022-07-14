@@ -5,6 +5,8 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+#include <iostream>
+
 namespace imb {
 namespace storage {
 struct cuda {};
@@ -17,7 +19,11 @@ struct cuda_managed_allocator {
 	value_type* allocate(size_t len){
 		void* buffer{};
 
-		cudaMallocManaged(&buffer, len);
+		auto rc = cudaMallocManaged(&buffer, len);
+		if(rc != cudaSuccess){
+			std::cerr<<"cudaMallocManaged: "<<cudaGetErrorString(error)<<std::endl;
+			exit(-1);
+		}
 
 		return reinterpret_cast<value_type*>(buffer);
 	}
