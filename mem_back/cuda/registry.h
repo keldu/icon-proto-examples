@@ -19,7 +19,7 @@ struct cuda_managed_allocator {
 
 		cudaMallocManaged(&buffer, len);
 
-		return buffer;
+		return reinterpret_cast<value_type*>(buffer);
 	}
 
 	void deallocate(value_type* buffer, size_t len){
