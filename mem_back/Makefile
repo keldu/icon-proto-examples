@@ -4,6 +4,10 @@ CXX=clang++
 CXXFLAGS=-std=c++17 -DNDEBUG -O3 
 #CXXFLAGS=-std=c++17 -g
 
+NVCC=nvcc
+
+### make rules ###
+
 all: basic keyed descriptor
 
 build_dir:
@@ -19,7 +23,7 @@ descriptor: descriptor_setup.cpp build_dir
 	${CXX} ${CXXFLAGS} -o build/descriptor_setup descriptor_setup.cpp
 
 cuda: cuda/setup.cpp build_dir
-	${CXX} ${CXXFLAGS} -o build/cuda_setup cuda/setup.cpp
+	${NVCC} ${CXXFLAGS} -o build/cuda_setup cuda/setup.cpp
 
 clean:
 	rm -rf build

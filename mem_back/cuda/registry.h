@@ -2,7 +2,8 @@
 
 #include "../static/registry.h"
 
-
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 namespace imb {
 namespace storage {
@@ -58,7 +59,7 @@ public:
 	}
 private:
 
-	std::vector<DataDescriptor,cuda_managed_allocator> data;
+	std::vector<DataDescriptor,cuda_managed_allocator<DataDescriptor>> data;
 };
 
 template<typename Key, typename DataDescriptor>
@@ -85,6 +86,6 @@ public:
 	}
 private:
 	registry<DataDescriptor, storage::cuda>& data;
-	std::vector<std::pair<Key, size_t>, cuda_managed_allocator> index;
+	std::vector<std::pair<Key, size_t>, cuda_managed_allocator<DataDescriptor>> index;
 };
 }
