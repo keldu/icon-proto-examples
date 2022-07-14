@@ -1,6 +1,6 @@
 #include "./registry.h"
 
-using cuda_registry = imb::registry_tuple<imb::storage::cuda, uint64_t>;
+using cuda_registry = imb::registry<uint64_t,imb::storage::cuda>;
 
 int main(){
 	using namespace imb;
