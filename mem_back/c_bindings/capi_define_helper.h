@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stddef.h>
+#include <stdlib.h>
+
 #define IMB_CAPI_BEGIN \
 extern "C"{
 
@@ -43,13 +46,6 @@ void registry_destroy_##TYPE (registry_##TYPE* registry) { \
 \
 
 #define IMB_CAPI_TYPE_HEADERS(TYPE) \
-struct var_collection_##TYPE { \
-	size_t size; \
-	size_t* ids; \
-}; \
-int var_collection_create_##TYPE (var_collection_##TYPE* collection, size_t size); \
-void var_collection_destroy_##TYPE (var_collection_##TYPE* collection); \
-\
 struct registry_##TYPE { \
 	void* internal_ptr; \
 }; \
@@ -57,4 +53,11 @@ struct registry_##TYPE { \
 int registry_create_##TYPE (registry_##TYPE* collection); \
 void registry_destroy_##TYPE (registry_##TYPE* collection); \
 \
+struct var_collection_##TYPE { \
+	size_t size; \
+	size_t* ids; \
+}; \
+int var_collection_create_##TYPE (var_collection_##TYPE* collection, size_t size); \
+void var_collection_destroy_##TYPE (var_collection_##TYPE* collection);
+
 
