@@ -14,6 +14,7 @@ struct registry_types {
 
 	using descriptor = descriptor_registry_map<T...>;
 };
+
 // Technically the var descriptor should be here or my variant since the registry description acts as an internal 
 using dynamic_registries = registry_types<
 	std::string,

@@ -33,10 +33,21 @@ public:
 	virtual const DataDescriptor& at(size_t i) const = 0;
 
 	virtual size_t add_var(const DataDescriptor& var) = 0;
+
+	virtual void sync() = 0;
 protected:
 	~i_registry() = default;
 	
 	friend class var_collection<DataDescriptor>;
+};
+
+/**
+ * Idea on how to change
+ */
+template<typename DataDescriptor>
+class registry_var {
+private:
+	DataDescriptor var;
 };
 
 namespace storage {
@@ -82,6 +93,10 @@ public:
 		size_t index = data.size();
 		data.push_back(var);
 		return index;
+	}
+
+	void sync() override {
+		/// Do nothing. No sync has to happen
 	}
 private:
 	std::vector<DataDescriptor> data;
