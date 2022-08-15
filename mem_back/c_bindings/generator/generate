@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+import argparse;
+import json;
+
+
+def parse_args():
+    default_type_file_location="./types.json"
+
+    parser = argparse.ArgumentParser(description = 'Parse arguments for C source file generation from json data');
+    parser.add_argument('--file', help='file location');
+    parser.add_argument('--template', help='template for the code generation');
+    args = parser.parse_args();
+
+    if(args.file):
+        return args.file;
+    else:
+        return default_type_file_location;
+    pass
+
+def parse_json_file(json_file_location):
+    json_file = open(json_file_location, "r");
+    json_string = json_file.read();
+    json_file.close();
+
+    json_obj = json.loads(json_string);
+    return json_obj;
+
+if __name__ == "__main__":
+    file_location = parse_args();
+    json_obj = parse_json_file(file_location);
+
+    print(json_obj);
+
+    pass
