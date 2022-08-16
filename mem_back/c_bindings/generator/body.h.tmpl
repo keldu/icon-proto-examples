@@ -1,0 +1,18 @@
+struct var_collection_${TYPE} {
+	size_t size;
+	size_t* ids;
+};
+
+extern int var_collection_create_${TYPE} ( struct var_collection_${TYPE}* collection, struct registry_${TYPE}* registry);
+
+extern void var_collection_destroy_${TYPE} ( struct var_collection_${TYPE}* collection);
+
+struct registry_${TYPE} {
+	void* internal_ptr;
+};
+
+extern int registry_create_${TYPE} ( struct registry_${TYPE}* registry );
+
+extern void registry_destroy_${TYPE} ( struct registry_${TYPE}* regitry );
+
+extern size_t registry_add_var_${TYPE} ( struct registry_${TYPE}* registry, ${TYPE} variable);

@@ -1,0 +1,45 @@
+int var_collection_create_${TYPE} ( struct var_collection_${TYPE}* collection, struct registry_${TYPE}* registry) {
+	if(!collection){
+		return -1;
+	}
+
+	collection->ids = nullptr;
+	collection->size = 0;
+
+	return 0;
+}
+
+void var_collection_destroy_${TYPE} ( struct var_collection_${TYPE}* collection) {
+	free(collection);
+}
+
+int registry_create_${TYPE} ( struct registry_${TYPE}* registry ) {
+	if(!registry){
+		return -1;
+	}
+	void* ptr = new imb::registry< ${TYPE} > ();
+	if(!ptr){
+		return -1;
+	}
+
+	registry->internal_ptr = ptr;
+
+	return 0;
+}
+
+void registry_destroy_${TYPE} ( struct registry_${TYPE}* registry ){
+	delete registry;
+}
+
+size_t registry_add_var_${TYPE} ( struct registry_${TYPE}* registry, ${TYPE} variable){
+	if(!registry){
+		return 0;
+	}
+
+	if(!registry->internal_ptr){
+		return 0;
+	}
+
+	auto* intern = static_cast<imb::registry< ${TYPE} > * > (registry->internal_ptr);
+	return intern->add_var(variable);
+}

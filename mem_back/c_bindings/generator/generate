@@ -5,18 +5,15 @@ import json;
 
 
 def parse_args():
-    default_type_file_location="./types.json"
+    default_type_file_location="./types.json";
+    default_template_folder="./";
 
     parser = argparse.ArgumentParser(description = 'Parse arguments for C source file generation from json data');
-    parser.add_argument('--file', help='file location');
-    parser.add_argument('--template', help='template for the code generation');
+    parser.add_argument('--file', help='file location', default=default_type_file_location);
+    parser.add_argument('--template', help='template for the code generation', default=default_template_folder);
     args = parser.parse_args();
 
-    if(args.file):
-        return args.file;
-    else:
-        return default_type_file_location;
-    pass
+    return [args.file, args.template];
 
 def parse_json_file(json_file_location):
     json_file = open(json_file_location, "r");
@@ -27,7 +24,7 @@ def parse_json_file(json_file_location):
     return json_obj;
 
 if __name__ == "__main__":
-    file_location = parse_args();
+    [file_location, template_folder] = parse_args();
     json_obj = parse_json_file(file_location);
 
     print(json_obj);
