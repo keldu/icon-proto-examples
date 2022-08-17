@@ -29,7 +29,12 @@ public:
 	 */
 	template<typename D>
 	keyed_registry<var_location, D>* find_registry(const std::string& name){
-		return std::get<keyed_registry<var_location,D>*>(find_registry_variant(name));
+		auto ptr = find_registry_variant(name);
+		if( ! std::holds_alternative<keyed_registry<var_location, D>*>(ptr) ){
+			return nullptr;
+		}
+
+		return std::get<keyed_registry<var_location,D>*>(ptr);
 	}
 
 	/**

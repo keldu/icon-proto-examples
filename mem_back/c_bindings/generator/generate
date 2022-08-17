@@ -3,6 +3,8 @@
 import argparse;
 import json;
 
+import c_bindings;
+
 
 def parse_args():
     default_type_file_location="./types.json";
@@ -27,6 +29,15 @@ if __name__ == "__main__":
     [file_location, template_folder] = parse_args();
     json_obj = parse_json_file(file_location);
 
-    print(json_obj);
+    var_map = {};
+
+    var_map["TYPES"] = [];
+
+    for type_var in json_obj["types"]:
+        var_map["TYPES"].append(type_var["type"])
+
+    var_map["OUTPUT_NAME"] = "c_bindings";
+
+    c_bindings.generate(template_folder, var_map);
 
     pass

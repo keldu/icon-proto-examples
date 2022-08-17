@@ -1,4 +1,5 @@
 {
+	"output_name" : "binding",
 	"types" : [
 		{
 			"type" : "Float32"
