@@ -16,8 +16,6 @@ def generate_file(ext, tmpl_folder, variable_map):
     for index, val in enumerate(names):
         names[index] = tmpl_folder + "/" + names[index] + ext + ".tmpl";
 
-    print(names);
-
     output_name = variable_map["OUTPUT_NAME"];
 
     tmpl_text = [];
@@ -47,7 +45,8 @@ def generate_file(ext, tmpl_folder, variable_map):
     for gt in generated_text:
         text = text + gt;
 
-    print(text);
+    output_file = open(output_name + ext, 'w');
+    output_file.write(text);
     pass
 
 def generate_header(tmpl_folder, variable_map):

@@ -36,7 +36,7 @@ if __name__ == "__main__":
     for type_var in json_obj["types"]:
         var_map["TYPES"].append(type_var["type"])
 
-    var_map["OUTPUT_NAME"] = "c_bindings";
+    var_map["OUTPUT_NAME"] = json_obj["output_name"];
 
     c_bindings.generate(template_folder, var_map);
 
