@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include <iostream>
 #include <cstdint>
 
 namespace imb {
@@ -35,10 +34,6 @@ public:
 	
 };
 
-std::ostream& operator<<(std::ostream& os, const var_location& loc){
-	os<<loc.jg<<" "<<loc.hgrid_id<<" "<<loc.vgrid_id<<" "<<loc.time_id;
-	return os;
-}
 }
 namespace std {
 

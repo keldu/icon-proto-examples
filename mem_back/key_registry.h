@@ -21,6 +21,7 @@ public:
 	i_keyed_registry<Key, DataDescriptor>& operator=(const i_keyed_registry<Key,DataDescriptor>&) = delete;
 	
 	virtual size_t add_var(const Key& key, DataDescriptor&& var) = 0;
+	virtual size_t add_var(const Key& key, const DataDescriptor& var) = 0;
 	
 	virtual std::optional<size_t> find_id(const Key& key) const = 0;
 	
@@ -48,20 +49,28 @@ template<typename Key, typename DataDescriptor>
 class keyed_registry<Key, DataDescriptor, storage::regular> : public i_keyed_registry<Key,DataDescriptor>{
 public:
 	keyed_registry():
-		registry{},
-		index{registry}
+		registry_table{},
+		index{registry_table}
 	{}
 	
 	var_collection<DataDescriptor> global_collection() {
-		return var_collection<DataDescriptor>{registry};
+		return var_collection<DataDescriptor>{registry_table};
 	}
 
 	/**
 	 * Add a variable to the registry itself
 	 */
 	size_t add_var(const Key& key, DataDescriptor&& var) override {
-		size_t id = registry.add_var(std::move(var));
+		size_t id = registry_table.add_var(std::move(var));
 		
+		index.add_index(key, id);
+
+		return id;
+	}
+
+	size_t add_var(const Key& key, const DataDescriptor& var) override {
+		size_t id = registry_table.add_var(var);
+
 		index.add_index(key, id);
 
 		return id;
@@ -82,7 +91,7 @@ public:
 			return nullptr;
 		}
 
-		auto& data = registry.at(*id);
+		auto& data = registry_table.at(*id);
 
 		return &data;
 	}
@@ -93,21 +102,21 @@ public:
 			return nullptr;
 		}
 		
-		auto& data = registry.at(*id);
+		auto& data = registry_table.at(*id);
 
 		return &data;
 	}
 
 	const DataDescriptor& at(size_t id) const override {
-		return registry.at(id);
+		return registry_table.at(id);
 	}
 
 	DataDescriptor& at(size_t id) override {
-		return registry.at(id);
+		return registry_table.at(id);
 	}
 	
 	i_registry<DataDescriptor>& internal_registry() override {
-		return registry;
+		return registry_table;
 	};
 
 	i_registry_index<Key, DataDescriptor>& internal_registry_index() override{
@@ -117,7 +126,7 @@ public:
 	/**
 	 * Shouldn't be public
 	 */
-	registry<DataDescriptor, storage::regular> registry;
+	registry<DataDescriptor, storage::regular> registry_table;
 	registry_index<Key,DataDescriptor, storage::regular> index;
 };
 
@@ -206,6 +215,10 @@ public:
 		));
 		
 		return inserted.second;
+	}
+
+	void remove_registry(const std::string& name) {
+		mapped_registries.erase(name);
 	}
 private:
 	std::map<std::string, std::unique_ptr<keyed_registry_variant>> mapped_registries;

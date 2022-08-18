@@ -1,7 +1,7 @@
 #pragma once
 
-#include <functional>
 #include <vector>
+#include <functional>
 #include <map>
 
 #include <cstdint>

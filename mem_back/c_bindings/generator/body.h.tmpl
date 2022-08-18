@@ -1,19 +1,23 @@
+struct descriptor_registry_${TYPE} {
+	void* internal;
+	struct descriptor_registry_core* core;
+	const char* name;
+};
+
+extern int descriptor_registry_${TYPE}_create ( struct descriptor_registry_${TYPE}* registry, const char* name, struct descriptor_registry_ctx* registry_ctx );
+
+extern void descriptor_registry_${TYPE}_destroy ( struct descriptor_registry_${TYPE}* registry );
+
+extern size_t descriptor_registry_${TYPE}_add_var ( struct descriptor_registry_${TYPE}* registry, ${TYPE} variable);
+
 struct var_collection_${TYPE} {
 	size_t size;
 	size_t* ids;
 };
 
-extern int var_collection_create_${TYPE} ( struct var_collection_${TYPE}* collection, struct registry_${TYPE}* registry);
+extern int var_collection_${TYPE}_create ( struct var_collection_${TYPE}* collection, struct descriptor_registry_${TYPE}* registry);
 
-extern void var_collection_destroy_${TYPE} ( struct var_collection_${TYPE}* collection);
+extern void var_collection_${TYPE}_destroy ( struct var_collection_${TYPE}* collection);
 
-struct registry_${TYPE} {
-	void* internal_ptr;
-};
-
-extern int registry_create_${TYPE} ( struct registry_${TYPE}* registry );
-
-extern void registry_destroy_${TYPE} ( struct registry_${TYPE}* regitry );
-
-extern size_t registry_add_var_${TYPE} ( struct registry_${TYPE}* registry, ${TYPE} variable);
+extern void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection, void (*func)( ${TYPE} ) );
 

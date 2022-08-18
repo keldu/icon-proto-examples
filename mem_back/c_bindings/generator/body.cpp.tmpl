@@ -1,45 +1,30 @@
-int var_collection_create_${TYPE} ( struct var_collection_${TYPE}* collection, struct registry_${TYPE}* registry) {
-	if(!collection){
+int descriptor_registry_${TYPE}_create( struct descriptor_registry_${TYPE}* registry, const char* name, struct descriptor_registry_ctx* ctx){
+	assert(ctx);
+	if(!ctx){
 		return -1;
 	}
 
-	collection->ids = nullptr;
-	collection->size = 0;
+	assert(registry);
+	if(!registry){
+		return -1;
+	}
+	auto map = reinterpret_cast<imb::descriptor_registry_map<float, int32_t>*>(ctx->internal);
+
+	map->add_registry< ${TYPE} > ( std::string{name} );
+
+	registry->internal = map->find_registry< ${TYPE} > ( std::string{name} );
+
+	if(!registry->internal){
+		return -1;
+	}
 
 	return 0;
 }
 
-void var_collection_destroy_${TYPE} ( struct var_collection_${TYPE}* collection) {
-	free(collection);
-}
+size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* registry, ${TYPE} value ){
+	auto ptr = reinterpret_cast< imb::keyed_registry< imb::var_location, ${TYPE} >* >(registry->internal);
 
-int registry_create_${TYPE} ( struct registry_${TYPE}* registry ) {
-	if(!registry){
-		return -1;
-	}
-	void* ptr = new imb::registry< ${TYPE} > ();
-	if(!ptr){
-		return -1;
-	}
+	static size_t i = 0;
 
-	registry->internal_ptr = ptr;
-
-	return 0;
-}
-
-void registry_destroy_${TYPE} ( struct registry_${TYPE}* registry ){
-	delete registry;
-}
-
-size_t registry_add_var_${TYPE} ( struct registry_${TYPE}* registry, ${TYPE} variable){
-	if(!registry){
-		return 0;
-	}
-
-	if(!registry->internal_ptr){
-		return 0;
-	}
-
-	auto* intern = static_cast<imb::registry< ${TYPE} > * > (registry->internal_ptr);
-	return intern->add_var(variable);
+	return ptr->add_var(imb::var_location{i++, 1,1,1}, value);
 }

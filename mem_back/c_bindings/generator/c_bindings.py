@@ -57,6 +57,9 @@ def generate_source(tmpl_folder, variable_map):
     generate_file(".cpp", tmpl_folder, variable_map);
     pass
 
+def generate_definition_helper(variable_map):
+    pass
+
 def generate(tmpl_folder, variable_map):
     generate_header(tmpl_folder, variable_map);
     generate_source(tmpl_folder, variable_map);

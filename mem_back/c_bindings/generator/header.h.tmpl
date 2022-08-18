@@ -7,3 +7,11 @@
 extern "C" {
 #endif
 
+struct descriptor_registry_ctx {
+	void* internal;
+};
+
+extern int descriptor_registry_context_create( struct descriptor_registry_ctx* ctx );
+
+extern void descriptor_registry_context_destroy( struct descriptor_registry_ctx* ctx );
+
