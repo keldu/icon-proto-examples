@@ -28,3 +28,14 @@ size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* 
 
 	return ptr->add_var(imb::var_location{i++, 1,1,1}, value);
 }
+
+int var_collection_${TYPE}_create ( struct var_collection_${TYPE}* collection, struct descriptor_registry_${TYPE}* registry ){
+	assert( collection && registry );
+	if( ! ( collection && registry ) ){
+		return -1;
+	}
+
+	collection->internal = new (std::nothrow) var_collection< $TYPE >();
+
+
+}
