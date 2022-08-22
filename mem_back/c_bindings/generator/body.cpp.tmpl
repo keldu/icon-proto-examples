@@ -21,21 +21,95 @@ int descriptor_registry_${TYPE}_create( struct descriptor_registry_${TYPE}* regi
 	return 0;
 }
 
+void descriptor_registry_${TYPE}_destroy( struct descriptor_registry_${TYPE}* registry ){
+	assert(registry);
+
+	if(!registry){
+		return;
+	}
+
+	assert(registry->ctx);
+	if(!registry->ctx){
+		return;
+	}
+
+	auto map = reinterpret_cast<imb::descriptor_registry_map<float, int32_t>*>(registry->ctx->internal);
+
+	/// @todo delete it
+}
+
 size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* registry, ${TYPE} value ){
+	assert(registry);
+	if(!registry){
+		return std::numeric_limits<size_t>::max();
+	}
+
+	assert(registry->internal);
+	if(!registry->internal){
+		return std::numeric_limits<size_t>::max();
+	}
+
 	auto ptr = reinterpret_cast< imb::keyed_registry< imb::var_location, ${TYPE} >* >(registry->internal);
 
 	static size_t i = 0;
 
-	return ptr->add_var(imb::var_location{i++, 1,1,1}, value);
+	return ptr->add_var(imb::var_location{static_cast<int32_t>(i++), 1,1,1}, value);
 }
 
 int var_collection_${TYPE}_create ( struct var_collection_${TYPE}* collection, struct descriptor_registry_${TYPE}* registry ){
-	assert( collection && registry );
-	if( ! ( collection && registry ) ){
+	assert( collection && registry && registry->internal );
+	if( ! ( collection && registry && registry->internal ) ){
 		return -1;
 	}
 
-	collection->internal = new (std::nothrow) var_collection< $TYPE >();
+	auto reg = reinterpret_cast< imb::keyed_registry< imb::var_location, ${TYPE} >* > (registry->internal);
 
+	collection->internal = new (std::nothrow) imb::keyed_var_collection< imb::var_location, ${TYPE} >(reg->internal_registry(), reg->internal_registry_index());
 
+	if(! collection->internal ){
+		return -1;
+	}
+
+	return 0;
 }
+
+int var_collection_${TYPE}_create_global ( struct var_collection_${TYPE}* collection, struct descriptor_registry_${TYPE}* registry ) {
+	assert( collection && registry && registry->internal );
+	if ( ! ( collection && registry && registry->internal ) ){
+		return -1;
+	}
+
+	auto reg = reinterpret_cast< imb::keyed_registry< imb::var_location, ${TYPE} >* > (registry->internal);
+
+	auto var_ptr = new (std::nothrow) imb::keyed_var_collection< imb::var_location, ${TYPE} >(reg->internal_registry(), reg->internal_registry_index());
+	collection->internal = var_ptr;
+
+	(*var_ptr) = std::move(reg->global_keyed_collection());
+	
+	if(! collection->internal ){
+		return -1;
+	}
+
+	return 0;
+}
+
+void var_collection_${TYPE}_destroy ( struct var_collection_${TYPE}* collection ){
+	assert(collection && collection->internal);
+	if(! ( collection && collection->internal ) ){
+		return;
+	}
+	delete reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* > ( collection->internal );
+}
+
+void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection, void (*func)( const void*, ${TYPE} ) ) {
+	assert(collection && collection->internal);
+	if(! ( collection && collection->internal ) ){
+		return;
+	}
+	auto ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( collection->internal );
+
+	ptr->for_each([&](const imb::var_location& first, ${TYPE} second){
+		func(&first, second);
+	});
+}
+

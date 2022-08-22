@@ -57,6 +57,15 @@ public:
 		return var_collection<DataDescriptor>{registry_table};
 	}
 
+	keyed_var_collection<Key, DataDescriptor> global_keyed_collection() {
+		std::vector<std::pair<Key,size_t>> data;
+		index.for_each([&data](const std::pair<Key, size_t>& pair){
+			data.emplace_back(pair);
+		});
+
+		return keyed_var_collection<Key, DataDescriptor>{registry_table, index, std::move(data)};
+	}
+
 	/**
 	 * Add a variable to the registry itself
 	 */

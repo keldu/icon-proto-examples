@@ -1,7 +1,9 @@
 #include "generator/binding.h"
 
-void iterate(float value){
-	(void) value;
+#include <stdio.h>
+
+void iterate(const void* key, float value){
+	printf("Value: %f\n", value);
 }
 
 int main(){
@@ -18,6 +20,18 @@ int main(){
 	}
 
 	size_t id = descriptor_registry_float_add_var(&reg_float, 5.f);
+	id = descriptor_registry_float_add_var(&reg_float, 6.f);
+	id = descriptor_registry_float_add_var(&reg_float, 2.f);
+	id = descriptor_registry_float_add_var(&reg_float, 3.f);
+	id = descriptor_registry_float_add_var(&reg_float, 10.f);
+	id = descriptor_registry_float_add_var(&reg_float, 11.f);
+	id = descriptor_registry_float_add_var(&reg_float, 1.f);
+
+	struct var_collection_float collection;
+
+	var_collection_float_create_global(&collection, &reg_float);
+	
+	var_collection_float_for_each(&collection, &iterate);
 
 	descriptor_registry_context_destroy(&reg_ctx);
 

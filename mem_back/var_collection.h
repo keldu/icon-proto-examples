@@ -206,9 +206,21 @@ public:
 	 * Constructor
 	 */
 	keyed_var_collection(i_registry<T>& registry_, i_registry_index<K,T>& index_):
-		registry{registry_},
-		index{index_}
+		registry{&registry_},
+		index{&index_}
 	{}
+
+	keyed_var_collection(i_registry<T>& registry_, i_registry_index<K,T>& index_, std::vector<std::pair<K,size_t>>&& data_):
+		registry{&registry_},
+		index{&index_},
+		data{std::move(data_)}
+	{}
+	
+	keyed_var_collection(const keyed_var_collection<K,T>&) = delete;
+	keyed_var_collection<K,T>& operator=(const keyed_var_collection<K,T>&) = delete;
+	
+	keyed_var_collection(keyed_var_collection<K,T>&& coll_) = default;
+	keyed_var_collection<K,T>& operator=(keyed_var_collection<K,T>&& coll_) = default;
 
 	/**
 	 * templated lambda
@@ -217,7 +229,7 @@ public:
 	void for_each(Func&& func){
 		for(auto& iter : data){
 			/// get from registry
-			auto& var = registry.at(iter.second);
+			auto& var = registry->at(iter.second);
 			func(iter.first, var);
 		}
 	}
@@ -226,7 +238,7 @@ public:
 	 * clone the current collection
 	 */
 	keyed_var_collection clone(){
-		keyed_var_collection<K,T> cloned{registry,index};
+		keyed_var_collection<K,T> cloned{*registry,*index};
 
 		cloned.data.reserve(data.size());
 
@@ -243,7 +255,7 @@ public:
 		auto cloned = clone();
 
 		std::stable_sort(cloned.data.begin(), cloned.data.end(), [this, sorter = std::move(func)](const std::pair<K,size_t>& left, const std::pair<K,size_t>& right){
-			return sorter({left.first, registry.at(left.second)}, {right.first, registry.at(right.second)});
+			return sorter({left.first, registry->at(left.second)}, {right.first, registry->at(right.second)});
 		});
 		return cloned;
 	}
@@ -253,10 +265,10 @@ public:
 	 */
 	template<typename Func>
 	keyed_var_collection filter(Func&& func){
-		keyed_var_collection<K,T> filtered{registry,index};
+		keyed_var_collection<K,T> filtered{*registry,*index};
 
 		std::copy_if(data.begin(), data.end(), std::back_inserter(filtered.data), [this, filterer = std::move(func)](std::pair<K, size_t> ind){
-			return filterer({ind.first, registry.at(ind.second)});
+			return filterer({ind.first, registry->at(ind.second)});
 		});
 
 		return filtered;
@@ -280,14 +292,14 @@ public:
 		return cloned;
 	}
 private:
-	i_registry<T>& registry;
-	i_registry_index<K, T>& index;
+	i_registry<T>* registry;
+	i_registry_index<K, T>* index;
 
 	std::vector<std::pair<K,size_t>> data;
 
 	size_t add_var(const K& key, const T& value){
-		size_t index_id = registry.add_var(value);
-		index.add_index(key, index_id);
+		size_t index_id = registry->add_var(value);
+		index->add_index(key, index_id);
 
 		data.push_back({key, index_id});
 

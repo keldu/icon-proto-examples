@@ -158,6 +158,13 @@ public:
 
 		return std::nullopt;
 	}
+
+	template<typename Func>
+	void for_each(Func&& func){
+		for(auto& iter : index){
+			func(iter);
+		}
+	}
 private:
 	registry<DataDescriptor,storage::regular>& data;
 	std::unordered_map<Key, size_t> index;
