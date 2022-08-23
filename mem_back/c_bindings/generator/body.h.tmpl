@@ -20,7 +20,7 @@ extern int var_collection_${TYPE}_create_global ( struct var_collection_${TYPE}*
 
 extern void var_collection_${TYPE}_destroy ( struct var_collection_${TYPE}* collection);
 
-extern void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection, void (*func)( const void*, ${TYPE} ) );
+extern void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection, void (*func)( const struct var_descriptor*, ${TYPE} ) );
 
 extern void var_collection_${TYPE}_filter ( struct var_collection_${TYPE}* collection, int (*func)( ${TYPE} ) );
 

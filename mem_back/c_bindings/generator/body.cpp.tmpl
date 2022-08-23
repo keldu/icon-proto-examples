@@ -101,7 +101,7 @@ void var_collection_${TYPE}_destroy ( struct var_collection_${TYPE}* collection 
 	delete reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* > ( collection->internal );
 }
 
-void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection, void (*func)( const void*, ${TYPE} ) ) {
+void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection, void (*func)( const struct var_descriptor*, ${TYPE} ) ) {
 	assert(collection && collection->internal);
 	if(! ( collection && collection->internal ) ){
 		return;
@@ -109,7 +109,15 @@ void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection
 	auto ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( collection->internal );
 
 	ptr->for_each([&](const imb::var_location& first, ${TYPE} second){
-		func(&first, second);
+		struct var_descriptor desc;
+		
+		desc.name = "";
+		desc.jg = first.jg;
+		desc.hgrid_id = first.hgrid_id;
+		desc.vgrid_id = first.vgrid_id;
+		desc.time_id = first.time_id;
+
+		func(&desc, second);
 	});
 }
 

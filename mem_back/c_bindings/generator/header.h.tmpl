@@ -7,6 +7,14 @@
 extern "C" {
 #endif
 
+struct var_descriptor {
+	const char* name;
+	int32_t jg;
+	int32_t hgrid_id;
+	int32_t vgrid_id;
+	int32_t time_id;
+};
+
 struct descriptor_registry_ctx {
 	void* internal;
 };

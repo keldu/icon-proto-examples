@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-void iterate(const void* key, float value){
+void iterate(const struct var_descriptor* key, float value){
 	printf("Value: %f\n", value);
 }
 
