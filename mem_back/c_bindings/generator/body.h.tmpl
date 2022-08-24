@@ -1,7 +1,6 @@
 struct descriptor_registry_${TYPE} {
-	void* internal = 0L;
 	struct descriptor_registry_ctx* ctx = 0L;
-	const char* name = 0L;
+	char* name = 0L;
 };
 
 extern int descriptor_registry_${TYPE}_create ( struct descriptor_registry_${TYPE}* registry, const char* name, struct descriptor_registry_ctx* registry_ctx );

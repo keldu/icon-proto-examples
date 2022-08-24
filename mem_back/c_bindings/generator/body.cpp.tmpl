@@ -1,3 +1,11 @@
+}
+imb::keyed_registry< imb::var_location, ${TYPE} > * descriptor_registry_${TYPE}_find_impl( imb::descriptor_registry_map_spec& map, const char* name ){
+	auto ptr = map.find_registry < ${TYPE} > ( std::string{name} );
+	return ptr;
+}
+
+extern "C" {
+
 int descriptor_registry_${TYPE}_create( struct descriptor_registry_${TYPE}* registry, const char* name, struct descriptor_registry_ctx* ctx){
 	assert(ctx);
 	if(!ctx){
@@ -8,15 +16,22 @@ int descriptor_registry_${TYPE}_create( struct descriptor_registry_${TYPE}* regi
 	if(!registry){
 		return -1;
 	}
-	auto map = reinterpret_cast<imb::descriptor_registry_map<float, int32_t>*>(ctx->internal);
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(ctx->internal);
 
 	map->add_registry< ${TYPE} > ( std::string{name} );
 
-	registry->internal = map->find_registry< ${TYPE} > ( std::string{name} );
-
-	if(!registry->internal){
+	auto internal = map->find_registry< ${TYPE} > ( std::string{name} );
+	if(!internal){
 		return -1;
 	}
+
+	registry->ctx = ctx;
+
+	size_t name_size = strlen(name);
+	char *name_ptr = static_cast<char*>(malloc(sizeof(char)*(name_size+1)));
+	strncpy(name_ptr, name, name_size+1);
+	
+	registry->name = name_ptr;
 
 	return 0;
 }
@@ -33,9 +48,21 @@ void descriptor_registry_${TYPE}_destroy( struct descriptor_registry_${TYPE}* re
 		return;
 	}
 
-	auto map = reinterpret_cast<imb::descriptor_registry_map<float, int32_t>*>(registry->ctx->internal);
+	assert(registry->name);
+	if(!registry->name){
+		return;
+	}
 
-	/// @todo delete it
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
+	assert(map);
+	if(!map){
+		return;
+	}
+
+	/// @todo implement
+	// map->remove(name);
+
+	free(registry->name);
 }
 
 size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* registry, ${TYPE} value ){
@@ -44,12 +71,17 @@ size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* 
 		return std::numeric_limits<size_t>::max();
 	}
 
-	assert(registry->internal);
-	if(!registry->internal){
+	assert(registry->ctx);
+	if(!registry->ctx){
 		return std::numeric_limits<size_t>::max();
 	}
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
 
-	auto ptr = reinterpret_cast< imb::keyed_registry< imb::var_location, ${TYPE} >* >(registry->internal);
+	auto ptr = descriptor_registry_${TYPE}_find_impl(*map, registry->name);
+	assert(ptr);
+	if(!ptr){
+		return std::numeric_limits<size_t>::max();
+	}
 
 	static size_t i = 0;
 
@@ -57,12 +89,13 @@ size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* 
 }
 
 int var_collection_${TYPE}_create ( struct var_collection_${TYPE}* collection, struct descriptor_registry_${TYPE}* registry ){
-	assert( collection && registry && registry->internal );
-	if( ! ( collection && registry && registry->internal ) ){
+	assert( collection && registry && registry->ctx );
+	if( ! ( collection && registry && registry->ctx ) ){
 		return -1;
 	}
 
-	auto reg = reinterpret_cast< imb::keyed_registry< imb::var_location, ${TYPE} >* > (registry->internal);
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
+	auto reg = descriptor_registry_${TYPE}_find_impl ( *map, registry->name );
 
 	collection->internal = new (std::nothrow) imb::keyed_var_collection< imb::var_location, ${TYPE} >(reg->internal_registry(), reg->internal_registry_index());
 
@@ -74,12 +107,13 @@ int var_collection_${TYPE}_create ( struct var_collection_${TYPE}* collection, s
 }
 
 int var_collection_${TYPE}_create_global ( struct var_collection_${TYPE}* collection, struct descriptor_registry_${TYPE}* registry ) {
-	assert( collection && registry && registry->internal );
-	if ( ! ( collection && registry && registry->internal ) ){
+	assert( collection && registry && registry->ctx );
+	if ( ! ( collection && registry && registry->ctx ) ){
 		return -1;
 	}
 
-	auto reg = reinterpret_cast< imb::keyed_registry< imb::var_location, ${TYPE} >* > (registry->internal);
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
+	auto reg = descriptor_registry_${TYPE}_find_impl ( *map, registry->name );
 
 	auto var_ptr = new (std::nothrow) imb::keyed_var_collection< imb::var_location, ${TYPE} >(reg->internal_registry(), reg->internal_registry_index());
 	collection->internal = var_ptr;

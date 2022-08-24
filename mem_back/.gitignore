@@ -1,7 +1,9 @@
 build/
-.o
-.so
-.os
-.a
-
-
+*.o
+*.so
+*.os
+*.a
+*.bin
+*binding.cpp
+*binding.h
+__pycache__

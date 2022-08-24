@@ -2,9 +2,13 @@
 
 #include "descriptor_registry.h"
 
+#include "./helper.h"
+
 #include <limits>
 
 #include <cassert>
+
+#include <cstring>
 
 extern "C" {
 
@@ -14,7 +18,7 @@ int descriptor_registry_context_create ( descriptor_registry_ctx* ctx ){
 		return -1;
 	}
 
-	ctx->internal = new (std::nothrow) imb::descriptor_registry_map<float, int32_t>();
+	ctx->internal = new (std::nothrow) imb::descriptor_registry_map_spec();
 
 	if(!ctx->internal){
 		return -1;
@@ -29,7 +33,7 @@ void descriptor_registry_context_destroy ( descriptor_registry_ctx* ctx ){
 		return;
 	}
 
-	auto ptr = reinterpret_cast<imb::descriptor_registry_map<float, int32_t>*>(ctx->internal);
+	auto ptr = reinterpret_cast<imb::descriptor_registry_map_spec*>(ctx->internal);
 
 	delete ptr;
 }
