@@ -87,7 +87,7 @@ void multi_registry_setup(){
 		auto collection = builder.build();
 
 		collection.for_each([](imb::var_location key, float value){
-			std::cout<<"Key: "<<key<<" Value: "<<value<<std::endl;
+			std::cout<<"Key: "<<key.time_id<<" Value: "<<value<<std::endl;
 		});
 
 		// Sort
@@ -98,7 +98,7 @@ void multi_registry_setup(){
 		
 		std::cout<<"\nSorted collection\n\n";
 		sorted_collection.for_each([](imb::var_location key, float value){
-			std::cout<<"Key: "<<key<<" Value: "<<value<<std::endl;
+			std::cout<<"Key: "<<key.time_id<<" Value: "<<value<<std::endl;
 		});
 
 		auto filtered_collection = collection.filter([](const std::pair<imb::var_location, float>& val){
@@ -107,7 +107,7 @@ void multi_registry_setup(){
 		
 		std::cout<<"\nFiltered collection\n\n";
 		filtered_collection.for_each([](imb::var_location key, float value){
-			std::cout<<"Key: "<<key<<" Value: "<<value<<std::endl;
+			std::cout<<"Key: "<<key.time_id<<" Value: "<<value<<std::endl;
 		});
 
 		// Concat two functions
@@ -118,7 +118,7 @@ void multi_registry_setup(){
 		});
 		auto concat_collection = filter_sort_collection.concat(filtered_collection);
 		concat_collection.for_each([](imb::var_location key, float value){
-			std::cout<<"Key: "<<key<<" Value: "<<value<<std::endl;
+			std::cout<<"Key: "<<key.time_id<<" Value: "<<value<<std::endl;
 		});
 	}
 
