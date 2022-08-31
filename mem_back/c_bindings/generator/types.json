@@ -5,7 +5,31 @@
 			"type" : "Float32"
 		},
 		{
+			"type" : "Float64"
+		},
+		{
+			"type" : "UInt8"
+		},
+		{
+			"type" : "UInt16"
+		},
+		{
+			"type" : "UInt32"
+		},
+		{
+			"type" : "UInt64"
+		},
+		{
+			"type" : "Int8"
+		},
+		{
+			"type" : "Int16"
+		},
+		{
 			"type" : "Int32"
+		},
+		{
+			"type" : "Int64"
 		}
 	]
 }

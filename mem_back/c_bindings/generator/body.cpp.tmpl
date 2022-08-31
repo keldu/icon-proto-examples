@@ -188,3 +188,33 @@ void var_collection_${TYPE}_filter ( struct var_collection_${TYPE}* target, stru
 		return func(&desc, second) ? 1 : 0;
 	});
 }
+
+void var_collection_${TYPE}_concat ( struct var_collection_${TYPE}* target, struct var_collection_${TYPE}* left, struct var_collection_${TYPE}* right){
+	assert(left && left->internal );
+	if(! ( left && left->internal ) ){
+		return;
+	}
+	assert(right && right->internal );
+	if(! ( right && right->internal ) ){
+		return;
+	}
+	assert(right->registry == left->registry);
+	if(!(right->registry == left->registry)){
+		return;
+	}
+	assert( target && ! target->internal );
+	if(! ( target && ! target->internal ) ){
+		return;
+	}
+	auto left_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( left->internal );
+	auto right_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( right->internal );
+
+	var_collection_${TYPE}_create( target, left->registry);
+	assert(target->internal);
+	if( !target->internal ){
+		return;
+	}
+	auto target_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( target->internal );
+
+	*target_ptr = left_ptr->concat(*right_ptr);
+}

@@ -1,5 +1,6 @@
 #include "generator/binding.h"
 
+
 #include <stdio.h>
 
 void iterate(const struct var_descriptor* key, float value){
@@ -7,7 +8,11 @@ void iterate(const struct var_descriptor* key, float value){
 }
 
 int filter(const struct var_descriptor* key, float value){
-	return value < 7.f;
+	return value < 5.f;
+}
+
+int filter_two(const struct var_descriptor* key, float value){
+	return value > 9.f;
 }
 
 int main(){
@@ -44,10 +49,22 @@ int main(){
 
 	printf("\nPrint filtered values\n");
 	var_collection_float_for_each(&filtered, &iterate);
+	
+	var_collection_float filtered_two;
 
+	var_collection_float_filter(&filtered_two, &collection, &filter_two);
+	printf("\nPrint filtered values\n");
+	var_collection_float_for_each(&filtered_two, &iterate);
+	
+	struct var_collection_float concat;
+	var_collection_float_concat(&concat, &filtered, &filtered_two);
+	
+	printf("\nPrint concat values\n");
+	var_collection_float_for_each(&concat, &iterate);
 	
 	var_collection_float_destroy(&collection);
 	var_collection_float_destroy(&filtered);
+	var_collection_float_destroy(&filtered_two);
 	descriptor_registry_context_destroy(&reg_ctx);
 
 	return 0;
