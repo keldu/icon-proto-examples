@@ -268,7 +268,7 @@ public:
 		keyed_var_collection<K,T> filtered{*registry,*index};
 
 		std::copy_if(data.begin(), data.end(), std::back_inserter(filtered.data), [this, filterer = std::move(func)](std::pair<K, size_t> ind){
-			return filterer({ind.first, registry->at(ind.second)});
+			return filterer(ind.first, registry->at(ind.second));
 		});
 
 		return filtered;

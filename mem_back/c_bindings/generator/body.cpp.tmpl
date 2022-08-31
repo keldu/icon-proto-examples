@@ -98,6 +98,7 @@ int var_collection_${TYPE}_create ( struct var_collection_${TYPE}* collection, s
 	auto reg = descriptor_registry_${TYPE}_find_impl ( *map, registry->name );
 
 	collection->internal = new (std::nothrow) imb::keyed_var_collection< imb::var_location, ${TYPE} >(reg->internal_registry(), reg->internal_registry_index());
+	collection->registry = registry;
 
 	if(! collection->internal ){
 		return -1;
@@ -117,6 +118,7 @@ int var_collection_${TYPE}_create_global ( struct var_collection_${TYPE}* collec
 
 	auto var_ptr = new (std::nothrow) imb::keyed_var_collection< imb::var_location, ${TYPE} >(reg->internal_registry(), reg->internal_registry_index());
 	collection->internal = var_ptr;
+	collection->registry = registry;
 
 	(*var_ptr) = std::move(reg->global_keyed_collection());
 	
@@ -136,7 +138,7 @@ void var_collection_${TYPE}_destroy ( struct var_collection_${TYPE}* collection 
 }
 
 void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection, void (*func)( const struct var_descriptor*, ${TYPE} ) ) {
-	assert(collection && collection->internal);
+	assert(collection && collection->internal );
 	if(! ( collection && collection->internal ) ){
 		return;
 	}
@@ -155,3 +157,34 @@ void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection
 	});
 }
 
+void var_collection_${TYPE}_filter ( struct var_collection_${TYPE}* target, struct var_collection_${TYPE}* collection, int (*func)( const struct var_descriptor*,  ${TYPE} ) ) {
+	assert(collection && collection->internal );
+	if(! ( collection && collection->internal ) ){
+		return;
+	}
+
+	assert( target && ! target->internal );
+	if(! ( target && ! target->internal ) ){
+		return;
+	}
+	auto ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( collection->internal );
+
+	var_collection_${TYPE}_create( target, collection->registry);
+	assert(target->internal);
+	if( !target->internal ){
+		return;
+	}
+	auto target_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( target->internal );
+	
+	*target_ptr = ptr->filter([&](const imb::var_location& first, ${TYPE} second){
+		struct var_descriptor desc;
+
+		desc.name = "";
+		desc.jg = first.jg;
+		desc.hgrid_id = first.hgrid_id;
+		desc.vgrid_id = first.vgrid_id;
+		desc.time_id = first.time_id;
+
+		return func(&desc, second) ? 1 : 0;
+	});
+}

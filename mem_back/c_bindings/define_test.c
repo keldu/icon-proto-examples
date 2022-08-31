@@ -6,6 +6,10 @@ void iterate(const struct var_descriptor* key, float value){
 	printf("Value: %f\n", value);
 }
 
+int filter(const struct var_descriptor* key, float value){
+	return value < 7.f;
+}
+
 int main(){
 	struct descriptor_registry_ctx reg_ctx;
 	int rc = descriptor_registry_context_create(&reg_ctx);
@@ -31,8 +35,19 @@ int main(){
 
 	var_collection_float_create_global(&collection, &reg_float);
 	
+	printf("Print all values\n");
 	var_collection_float_for_each(&collection, &iterate);
 
+	struct var_collection_float filtered;
+
+	var_collection_float_filter(&filtered, &collection, &filter);
+
+	printf("\nPrint filtered values\n");
+	var_collection_float_for_each(&filtered, &iterate);
+
+	
+	var_collection_float_destroy(&collection);
+	var_collection_float_destroy(&filtered);
 	descriptor_registry_context_destroy(&reg_ctx);
 
 	return 0;

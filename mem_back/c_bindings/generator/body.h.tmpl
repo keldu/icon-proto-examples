@@ -11,6 +11,7 @@ extern size_t descriptor_registry_${TYPE}_add_var ( struct descriptor_registry_$
 
 struct var_collection_${TYPE} {
 	void* internal = 0L;
+	struct descriptor_registry_${TYPE}* registry = 0L;
 };
 
 extern int var_collection_${TYPE}_create ( struct var_collection_${TYPE}* collection, struct descriptor_registry_${TYPE}* registry);
@@ -21,7 +22,7 @@ extern void var_collection_${TYPE}_destroy ( struct var_collection_${TYPE}* coll
 
 extern void var_collection_${TYPE}_for_each ( struct var_collection_${TYPE}* collection, void (*func)( const struct var_descriptor*, ${TYPE} ) );
 
-extern void var_collection_${TYPE}_filter ( struct var_collection_${TYPE}* collection, int (*func)( ${TYPE} ) );
+extern void var_collection_${TYPE}_filter ( struct var_collection_${TYPE}* target, struct var_collection_${TYPE}* collection, int (*func)( const struct var_descriptor*, ${TYPE} ) );
 
 extern void var_collection_${TYPE}_concat ( struct var_collection_${TYPE}* target, struct var_collection_${TYPE}* left, struct var_collection_${TYPE}* right);
 
