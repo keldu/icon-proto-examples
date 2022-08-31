@@ -5,7 +5,7 @@ CC=gcc
 
 all: define_test
 
-define_test_impl.o: define_test_impl.cpp capi_define_helper.h
+define_test_impl.o: 
 	${CXX} -std=c++17 define_test_impl.cpp -c -o define_test_impl.o
 
 define_test: define_test.c define_test_impl.o
