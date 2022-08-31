@@ -44,6 +44,9 @@ def generate_file(ext, tmpl_folder, variable_map):
     for t in type_list:
         generated_text.append(replace_variable(tmpl_text[1], "TYPE", lang_translation_map[t]));
     
+    ## Hack for last comma
+    generated_text[-1] = generated_text[-1][:len(generated_text[-1])-2]+ "\n";
+
     text = replace_variable(tmpl_text[2], "OUTPUT_NAME", variable_map["OUTPUT_NAME"]);
     generated_text.append(text);
 
