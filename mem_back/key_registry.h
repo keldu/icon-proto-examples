@@ -43,10 +43,7 @@ protected:
 };
 
 template<typename Key, typename DataDescriptor, typename Storage = storage::regular, typename IndexStorage = storage::regular>
-class keyed_registry;
-
-template<typename Key, typename DataDescriptor>
-class keyed_registry<Key, DataDescriptor, storage::regular> : public i_keyed_registry<Key,DataDescriptor>{
+class keyed_registry : public i_keyed_registry<Key,DataDescriptor>{
 public:
 	keyed_registry():
 		registry_table{},
