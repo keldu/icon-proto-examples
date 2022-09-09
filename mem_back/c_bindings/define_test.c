@@ -34,6 +34,7 @@ int main(){
 
 	// Dummy desc for now. Too lazy to set values for now. Unique desc are generated in the add_var functionality
 	struct var_descriptor desc;
+
 	size_t id = descriptor_registry_float_add_var(&reg_float, &desc, 5.f);
 	id = descriptor_registry_float_add_var(&reg_float, &desc, 6.f);
 	id = descriptor_registry_float_add_var(&reg_float, &desc, 2.f);
@@ -75,6 +76,7 @@ int main(){
 	var_collection_float_for_each(&sorted, &iterate);
 	
 	var_collection_float_destroy(&sorted);
+	var_collection_float_destroy(&concat);
 	var_collection_float_destroy(&collection);
 	var_collection_float_destroy(&filtered);
 	var_collection_float_destroy(&filtered_two);
