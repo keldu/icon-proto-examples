@@ -45,7 +45,7 @@ void simple_keyed_setup(){
 	imb::keyed_registry<uint32_t, std::string> registry;
 
 	/// Builder
-	auto builder = create_keyed_collection_builder<uint32_t, std::string>(registry);
+	auto builder = imb::create_keyed_collection_builder<uint32_t, std::string>(registry);
 
 	/// element isn't necessary, but provides the created index
 	size_t element{};
@@ -101,8 +101,8 @@ void multi_registry_setup(){
 			std::cout<<"Key: "<<key.time_id<<" Value: "<<value<<std::endl;
 		});
 
-		auto filtered_collection = collection.filter([](const std::pair<imb::var_location, float>& val){
-			return val.second > 2.6;
+		auto filtered_collection = collection.filter([](const imb::var_location& key, float& val){
+			return val > 2.6;
 		});
 		
 		std::cout<<"\nFiltered collection\n\n";
@@ -113,8 +113,8 @@ void multi_registry_setup(){
 		// Concat two functions
 		std::cout<<"\nConcat collection\n\n";
 
-		auto filter_sort_collection = sorted_collection.filter([](const std::pair<imb::var_location,float>& val){
-			return val.second > 2.4 && val.second < 7.0;
+		auto filter_sort_collection = sorted_collection.filter([](const imb::var_location& key,float& val){
+			return val > 2.4 && val < 7.0;
 		});
 		auto concat_collection = filter_sort_collection.concat(filtered_collection);
 		concat_collection.for_each([](imb::var_location key, float value){
