@@ -4,7 +4,7 @@ CXX=g++
 CC=gcc
 CXXFLAGS=-std=c++20
 
-all: define_test
+all: define_test binding.so
 
 generate_binding:
 	./generator/generate --root "./generator/"
@@ -17,10 +17,10 @@ binding.o: binding.cpp binding.h
 	${CXX} ${CXXFLAGS} -I../ -c binding.cpp -o binding.o
 
 binding.os: binding.cpp binding.h
-	${CXX}
+	${CXX} ${CXXFLAGS} -I../ -fpic -c -o binding.os binding.cpp
 
 binding.so: binding.os
-	${CXX} 
+	${CXX} -shared -o binding.so binding.os
 
 define_test: define_test.c binding.o
 	${CXX} define_test.c binding.o -o define_test.bin
