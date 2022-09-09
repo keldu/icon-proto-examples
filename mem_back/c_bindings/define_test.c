@@ -32,13 +32,15 @@ int main(){
 		return -2;
 	}
 
-	size_t id = descriptor_registry_float_add_var(&reg_float, 5.f);
-	id = descriptor_registry_float_add_var(&reg_float, 6.f);
-	id = descriptor_registry_float_add_var(&reg_float, 2.f);
-	id = descriptor_registry_float_add_var(&reg_float, 3.f);
-	id = descriptor_registry_float_add_var(&reg_float, 10.f);
-	id = descriptor_registry_float_add_var(&reg_float, 11.f);
-	id = descriptor_registry_float_add_var(&reg_float, 1.f);
+	// Dummy desc for now. Too lazy to set values for now. Unique desc are generated in the add_var functionality
+	struct var_descriptor desc;
+	size_t id = descriptor_registry_float_add_var(&reg_float, &desc, 5.f);
+	id = descriptor_registry_float_add_var(&reg_float, &desc, 6.f);
+	id = descriptor_registry_float_add_var(&reg_float, &desc, 2.f);
+	id = descriptor_registry_float_add_var(&reg_float, &desc, 3.f);
+	id = descriptor_registry_float_add_var(&reg_float, &desc, 10.f);
+	id = descriptor_registry_float_add_var(&reg_float, &desc, 11.f);
+	id = descriptor_registry_float_add_var(&reg_float, &desc, 1.f);
 
 	struct var_collection_float collection;
 
