@@ -57,7 +57,7 @@ int main(){
 	var_collection_float filtered_two;
 
 	var_collection_float_filter(&filtered_two, &collection, &filter_two);
-	printf("\nPrint filtered values\n");
+	printf("\nPrint other filtered values\n");
 	var_collection_float_for_each(&filtered_two, &iterate);
 	
 	struct var_collection_float concat;
