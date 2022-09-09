@@ -2,7 +2,7 @@
 
 CXX=g++
 CC=gcc
-CXXFLAGS=-std=c++20
+CXXFLAGS=-std=c++20 -DNDEBUG -O3
 
 all: define_test binding.so
 

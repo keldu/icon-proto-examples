@@ -1,8 +1,8 @@
 .PHONY: all build_dir clean
 
 CXX=g++
-CXXFLAGS=-std=c++17 -DNDEBUG -O3 
-#CXXFLAGS=-std=c++17 -g
+CXXFLAGS=-std=c++20 -DNDEBUG -O3 
+#CXXFLAGS=-std=c++20 -g
 
 NVCC=nvcc
 
