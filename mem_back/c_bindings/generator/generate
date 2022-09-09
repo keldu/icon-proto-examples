@@ -11,11 +11,12 @@ def parse_args():
     default_template_folder="./";
 
     parser = argparse.ArgumentParser(description = 'Parse arguments for C source file generation from json data');
+    parser.add_argument('--root', help='root dir', default="./");
     parser.add_argument('--file', help='file location', default=default_type_file_location);
     parser.add_argument('--template', help='template for the code generation', default=default_template_folder);
     args = parser.parse_args();
 
-    return [args.file, args.template];
+    return [args.file, args.template, args.root];
 
 def parse_json_file(json_file_location):
     json_file = open(json_file_location, "r");
@@ -26,8 +27,8 @@ def parse_json_file(json_file_location):
     return json_obj;
 
 if __name__ == "__main__":
-    [file_location, template_folder] = parse_args();
-    json_obj = parse_json_file(file_location);
+    [file_location, template_folder, root_dir] = parse_args();
+    json_obj = parse_json_file(root_dir + file_location);
 
     var_map = {};
 
@@ -38,6 +39,6 @@ if __name__ == "__main__":
 
     var_map["OUTPUT_NAME"] = json_obj["output_name"];
 
-    c_bindings.generate(template_folder, var_map);
+    c_bindings.generate(root_dir + template_folder, var_map);
 
     pass

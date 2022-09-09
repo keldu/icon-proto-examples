@@ -1,15 +1,29 @@
-.PHONY: all clean
+.PHONY: all generate_binding clean
 
 CXX=g++
 CC=gcc
+CXXFLAGS=-std=c++20
 
 all: define_test
 
-define_test_impl.o: 
-	${CXX} -std=c++17 define_test_impl.cpp -c -o define_test_impl.o
+generate_binding:
+	./generator/generate --root "./generator/"
 
-define_test: define_test.c define_test_impl.o
-	${CC} define_test.c define_test_impl.o -o define_test.bin
+binding.h: generate_binding
+
+binding.cpp: generate_binding
+
+binding.o: binding.cpp binding.h
+	${CXX} ${CXXFLAGS} -I../ -c binding.cpp -o binding.o
+
+binding.os: binding.cpp binding.h
+	${CXX}
+
+binding.so: binding.os
+	${CXX} 
+
+define_test: define_test.c binding.o
+	${CXX} define_test.c binding.o -o define_test.bin
 
 clean:
-	rm *.o *.bin
+	rm *.so *.os *.o *.bin

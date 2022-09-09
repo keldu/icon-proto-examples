@@ -1,6 +1,6 @@
 .PHONY: all build_dir clean
 
-CXX=clang++
+CXX=g++
 CXXFLAGS=-std=c++17 -DNDEBUG -O3 
 #CXXFLAGS=-std=c++17 -g
 
@@ -8,7 +8,7 @@ NVCC=nvcc
 
 ### make rules ###
 
-all: basic keyed descriptor
+all: basic keyed descriptor bindings
 
 build_dir:
 	mkdir -p build
@@ -24,6 +24,9 @@ descriptor: descriptor_setup.cpp build_dir
 
 cuda: cuda/setup.cpp build_dir
 	${NVCC} ${CXXFLAGS} -o build/cuda_setup cuda/setup.cpp
+
+bindings:
+	make -C c_bindings
 
 clean:
 	rm -rf build

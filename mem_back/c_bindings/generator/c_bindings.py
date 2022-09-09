@@ -16,6 +16,12 @@ lang_translation_map = {
 def replace_variable(tmpl_text, variable_name, variable_value):
     return tmpl_text.replace("${"+variable_name+"}", variable_value);
 
+def generate_file_loop():
+    
+    loop_stack = [];
+
+    pass
+
 def generate_file(ext, tmpl_folder, variable_map):
     if tmpl_folder[-1] == "/":
         tmpl_folder = tmpl_folder[:-1];
