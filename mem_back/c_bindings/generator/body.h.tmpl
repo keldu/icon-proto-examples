@@ -26,3 +26,5 @@ extern void var_collection_${TYPE}_filter ( struct var_collection_${TYPE}* targe
 
 extern void var_collection_${TYPE}_concat ( struct var_collection_${TYPE}* target, struct var_collection_${TYPE}* left, struct var_collection_${TYPE}* right);
 
+extern void var_collection_${TYPE}_sort ( struct var_collection_${TYPE}* sorted, struct var_collection_${TYPE}* source, int (*func)(const struct var_descriptor*, ${TYPE}, const struct var_descriptor*, ${TYPE} ) );
+

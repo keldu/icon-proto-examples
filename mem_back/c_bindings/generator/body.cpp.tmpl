@@ -176,7 +176,7 @@ void var_collection_${TYPE}_filter ( struct var_collection_${TYPE}* target, stru
 	}
 	auto target_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( target->internal );
 	
-	*target_ptr = ptr->filter([&](const imb::var_location& first, ${TYPE} second){
+	*target_ptr = ptr->filter([&](const imb::var_location& first, ${TYPE} second) -> bool{
 		struct var_descriptor desc;
 
 		desc.name = "";
@@ -185,7 +185,7 @@ void var_collection_${TYPE}_filter ( struct var_collection_${TYPE}* target, stru
 		desc.vgrid_id = first.vgrid_id;
 		desc.time_id = first.time_id;
 
-		return func(&desc, second) ? 1 : 0;
+		return func(&desc, second) != 0 ? true : false;
 	});
 }
 
@@ -217,4 +217,45 @@ void var_collection_${TYPE}_concat ( struct var_collection_${TYPE}* target, stru
 	auto target_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( target->internal );
 
 	*target_ptr = left_ptr->concat(*right_ptr);
+}
+
+void var_collection_${TYPE}_sort ( struct var_collection_${TYPE}* sorted, struct var_collection_${TYPE}* source, int (*func)(const struct var_descriptor*left_d, ${TYPE} left_v, const struct var_descriptor* right_d, ${TYPE} right_v ) ){
+	assert(sorted && !sorted->internal );
+	if(! ( sorted && !sorted->internal ) ){
+		return;
+	}
+
+	assert(source && source->internal );
+	if(! ( source && source->internal ) ){
+		return;
+	}
+	
+	auto source_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( source->internal );
+	
+	var_collection_${TYPE}_create( sorted, source->registry );
+	assert(sorted->internal);
+	if( !sorted->internal ){
+		return;
+	}
+
+	auto sorted_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, ${TYPE} >* >( sorted->internal );
+	*sorted_ptr = source_ptr->sort([&](const std::pair<imb::var_location, ${TYPE}>& left, const std::pair<imb::var_location, ${TYPE}>& right) -> bool{
+		struct var_descriptor desc_left;
+
+		desc_left.name = "";
+		desc_left.jg = left.first.jg;
+		desc_left.hgrid_id = left.first.hgrid_id;
+		desc_left.vgrid_id = left.first.vgrid_id;
+		desc_left.time_id = left.first.time_id;
+		
+		struct var_descriptor desc_right;
+
+		desc_right.name = "";
+		desc_right.jg = right.first.jg;
+		desc_right.hgrid_id = right.first.hgrid_id;
+		desc_right.vgrid_id = right.first.vgrid_id;
+		desc_right.time_id = right.first.time_id;
+
+		return func(&desc_left, left.second, &desc_right, right.second) != 0 ? true : false;
+	});
 }

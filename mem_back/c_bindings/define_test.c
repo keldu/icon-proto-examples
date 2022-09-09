@@ -1,4 +1,4 @@
-#include "generator/binding.h"
+#include "binding.h"
 
 
 #include <stdio.h>
@@ -13,6 +13,10 @@ int filter(const struct var_descriptor* key, float value){
 
 int filter_two(const struct var_descriptor* key, float value){
 	return value > 9.f;
+}
+
+int sort(const struct var_descriptor* key_l, float value_l, const struct var_descriptor* key_r, float value_r){
+	return value_l < value_r;
 }
 
 int main(){
@@ -62,6 +66,13 @@ int main(){
 	printf("\nPrint concat values\n");
 	var_collection_float_for_each(&concat, &iterate);
 	
+	struct var_collection_float sorted;
+	var_collection_float_sort(&sorted, &collection, &sort);
+
+	printf("\nPrint sorted values\n");
+	var_collection_float_for_each(&sorted, &iterate);
+	
+	var_collection_float_destroy(&sorted);
 	var_collection_float_destroy(&collection);
 	var_collection_float_destroy(&filtered);
 	var_collection_float_destroy(&filtered_two);
