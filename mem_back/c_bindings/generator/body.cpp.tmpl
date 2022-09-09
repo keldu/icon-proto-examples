@@ -65,7 +65,7 @@ void descriptor_registry_${TYPE}_destroy( struct descriptor_registry_${TYPE}* re
 	free(registry->name);
 }
 
-size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* registry, ${TYPE} value ){
+size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* registry, struct var_descriptor* descriptor, ${TYPE} value ){
 	assert(registry);
 	if(!registry){
 		return std::numeric_limits<size_t>::max();
@@ -84,6 +84,9 @@ size_t descriptor_registry_${TYPE}_add_var( struct descriptor_registry_${TYPE}* 
 	}
 
 	static size_t i = 0;
+
+	/// @todo convert desc to location
+	imb::var_location location;
 
 	return ptr->add_var(imb::var_location{static_cast<int32_t>(i++), 1,1,1}, value);
 }

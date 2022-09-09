@@ -7,7 +7,7 @@ extern int descriptor_registry_${TYPE}_create ( struct descriptor_registry_${TYP
 
 extern void descriptor_registry_${TYPE}_destroy ( struct descriptor_registry_${TYPE}* registry );
 
-extern size_t descriptor_registry_${TYPE}_add_var ( struct descriptor_registry_${TYPE}* registry, ${TYPE} variable);
+extern size_t descriptor_registry_${TYPE}_add_var ( struct descriptor_registry_${TYPE}* registry, struct var_descriptor* descriptor, ${TYPE} variable);
 
 struct var_collection_${TYPE} {
 	void* internal = 0L;
