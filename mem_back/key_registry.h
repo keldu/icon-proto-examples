@@ -42,7 +42,7 @@ protected:
 	friend class keyed_var_collection<Key,DataDescriptor>;
 };
 
-template<typename Key, typename DataDescriptor, typename Storage = storage::regular>
+template<typename Key, typename DataDescriptor, typename Storage = storage::regular, typename IndexStorage = storage::regular>
 class keyed_registry;
 
 template<typename Key, typename DataDescriptor>
@@ -135,8 +135,8 @@ public:
 	/**
 	 * Shouldn't be public
 	 */
-	registry<DataDescriptor, storage::regular> registry_table;
-	registry_index<Key,DataDescriptor, storage::regular> index;
+	registry<DataDescriptor, Storage> registry_table;
+	registry_index<Key,DataDescriptor, IndexStorage> index;
 };
 
 /**
@@ -183,6 +183,7 @@ private:
 
 /**
  * Dynamic variant of the registry tuple
+ * @todo add storage definitions
  */
 template<typename Key, typename... DataDesc>
 class keyed_registry_map {
