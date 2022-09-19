@@ -1,9 +1,19 @@
 #include "binding.h"
 
-
+#include <assert.h>
 #include <stdio.h>
 
+void print_var_descriptor(const struct var_descriptor* desc){
+	assert(desc);
+	if(!desc){
+		printf("Descriptor: nullptr");
+		return;
+	}
+	printf("Descriptor: %s %d %d %d %d \t", desc->name, desc->jg, desc->hgrid_id, desc->vgrid_id, desc->time_id);
+}
+
 void iterate(const struct var_descriptor* key, float value){
+	print_var_descriptor(key);
 	printf("Value: %f\n", value);
 }
 

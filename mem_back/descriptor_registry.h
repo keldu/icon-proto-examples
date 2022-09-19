@@ -2,6 +2,7 @@
 
 #include "key_registry.h"
 #include "var_descriptor.h"
+#include "descriptor_collection.h"
 
 #include <variant>
 #include <optional>
