@@ -64,9 +64,9 @@ public:
 		if(!registry){
 			return nullptr;
 		}
-		
+
 		auto& specific_reg = std::get<imb::keyed_registry<imb::var_location, D>>(registry);
-		
+
 		return specific_reg.find(desc.location);
 	}
 
@@ -92,6 +92,18 @@ public:
 		return 0;
 	}
 
+	template<typename D>
+	std::optional<descriptor_var_collection<D>> global_collection_of(const std::string& name){
+		auto reg = this->template find_registry<D>(name);
+
+		if(!reg){
+			return std::nullopt;
+		}
+
+		auto key_coll = reg->global_keyed_collection();
+
+		return descriptor_var_collection<D>{std::move(key_coll), name};
+	}
 private:
 	keyed_registry_map<var_location, T...> maps;
 };
