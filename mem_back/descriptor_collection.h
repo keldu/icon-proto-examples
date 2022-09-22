@@ -50,8 +50,29 @@ public:
 
 	template<typename Func>
 	descriptor_var_collection sort(Func&& func){
-		auto cloned = collection.sort([f = std::move(func)](const var_location, T& val){
+		std::pair<var_descriptor,T> left_p;
+		std::pair<var_descriptor,T> right_p;
+		left_p.first.name = name;
+		right_p.first.name = name;
+		auto cloned = collection.sort([f = std::move(func), &left_p, &right_p](const std::pair<var_location,T>& left, const std::pair<var_location,T>& right){
+			left_p.first.location = left.first;
+			left_p.second = left.second;
+			
+			right_p.first.location = right.first;
+			right_p.second = left.second;
+			return f(left_p, right_p);
+		});
 
+		return {std::move(cloned), name};
+	}
+
+	template<typename Func>
+	descriptor_var_collection filter(Func&& func){
+		var_descriptor desc;
+		desc.name = name;
+		auto cloned = collection.filter([f = std::move(func), &desc](const var_location& location, const T& val){
+			desc.location = location;
+			return f(desc, val);
 		});
 
 		return {std::move(cloned), name};
