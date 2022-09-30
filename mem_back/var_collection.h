@@ -291,6 +291,14 @@ public:
 		
 		return cloned;
 	}
+
+	size_t size() const {
+		return data.size();
+	}
+
+	const std::vector<std::pair<K,size_t>>& raw_data(){
+		return data;
+	}
 private:
 	i_registry<T>* registry;
 	i_registry_index<K, T>* index;

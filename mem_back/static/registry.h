@@ -95,6 +95,10 @@ public:
 		return index;
 	}
 
+	size_t size() const {
+		return data.size();
+	}
+
 	void sync() override {
 		/// Do nothing. No sync has to happen
 	}

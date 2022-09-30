@@ -4,6 +4,7 @@
 #include "var_descriptor.h"
 
 #include <string>
+#include <variant>
 
 namespace imb {
 template<typename... T>
@@ -77,6 +78,10 @@ public:
 
 		return {std::move(cloned), name};
 	}
+
+	size_t size() const {
+		return collection.size();
+	}
 private:
 	keyed_var_collection<var_location, T> collection;
 	std::string name;
@@ -85,7 +90,52 @@ private:
 template<typename... T>
 class descriptor_var_collection_variant {
 public:
-private:
+	struct data {
+		size_t id;
+		var_descriptor key;
+	};
+public:
+	descriptor_var_collection_variant(descriptor_registry_map<T...>& maps_):
+		maps{&maps_}
+	{}
 
+	descriptor_var_collection_variant(descriptor_registry_map<T...>& maps_, std::vector<descriptor_var_collection_variant::data>&& data_):
+		maps{&maps_},
+		data{std::move(data_)}
+	{}
+	
+	descriptor_var_collection_variant(const descriptor_var_collection_variant<T...>&) = delete;
+	descriptor_var_collection_variant& operator=(const descriptor_var_collection_variant<T...>&) = delete;
+	
+	descriptor_var_collection_variant(descriptor_var_collection_variant<T...>&&) = default;
+	descriptor_var_collection_variant& operator=(descriptor_var_collection_variant<T...>&&) = default;
+
+	descriptor_var_collection_variant clone(){
+		descriptor_var_collection_variant<T...> cloned{*maps};
+		cloned.data.reserve(data.size());
+
+		std::copy(data.begin(), data.end(), std::back_inserter(cloned.data));
+
+		return cloned;
+	}
+	
+	template<typename Func>
+	void for_each(Func&& func){
+		for(auto& iter: data){
+			auto reg = maps->find_registry_variant(iter.name);
+			if(reg){
+				auto var = std::visit([&iter](auto& arg) -> std::variant<T*...> {
+					auto& val = arg.at(iter.id);
+					return &val;
+				}
+				, *reg);
+				
+				func(iter.key, var);
+			}
+		}
+	}
+private:
+	descriptor_registry_map<T...>* maps;
+	std::vector<data> data;
 };
 }

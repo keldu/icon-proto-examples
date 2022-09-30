@@ -1,4 +1,4 @@
 { pkgs ? import <nixpkgs> {} }:
-  pkgs.mkShell {
-    nativeBuildInputs = [ pkgs.gnumake pkgs.gcc pkgs.python3 ];
+  pkgs.mkShellNoCC {
+    nativeBuildInputs = [ pkgs.gnumake pkgs.gfortran12 pkgs.python3 ];
   }

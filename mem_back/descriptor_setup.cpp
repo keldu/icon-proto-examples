@@ -43,6 +43,12 @@ void simple_setup(){
 		);
 		std::cout.flush();
 	}
+
+	{
+		auto var_col = map.global_collection_variant();
+
+
+	}
 }
 
 int main(){

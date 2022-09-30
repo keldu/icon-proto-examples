@@ -41,7 +41,7 @@ public:
 	/**
 	 * find a var
 	 */
-	std::variant<T*...> find_variant_variable(const var_descriptor& desc){
+	std::variant<T*...> find_variable_variant(const var_descriptor& desc){
 		keyed_registry_variant_ptr registry = maps.find_registry_variant(desc.name);
 
 		if(!registry){
@@ -103,6 +103,31 @@ public:
 		auto key_coll = reg->global_keyed_collection();
 
 		return descriptor_var_collection<D>{std::move(key_coll), name};
+	}
+
+	descriptor_var_collection_variant<T...> global_collection_variant(){
+		std::vector<typename descriptor_var_collection_variant<T...>::data> variant_data;
+
+		maps.for_each([&](auto& name_and_registry){
+			std::visit([&](auto& reg){
+
+				auto collection = reg.global_keyed_collection();
+
+				const auto& raw_data = collection.raw_data();
+
+				variant_data.reserve(variant_data.size() + raw_data.size());
+
+				for(const auto& iter : raw_data){
+					/**
+					 * 1. id
+					 * 2. key
+					 */
+					variant_data.emplace_back(typename descriptor_var_collection_variant<T...>::data{iter.second, {name_and_registry.first, iter.first}});
+				}
+			}, *name_and_registry.second);
+		});
+
+		return {*this, std::move(variant_data)};
 	}
 private:
 	keyed_registry_map<var_location, T...> maps;

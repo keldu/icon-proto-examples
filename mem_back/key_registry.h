@@ -51,7 +51,13 @@ public:
 	{}
 	
 	var_collection<DataDescriptor> global_collection() {
-		return var_collection<DataDescriptor>{registry_table};
+		std::vector<size_t> data;
+
+		index.for_each([&data](const size_t& value){
+			data.emplace_back(value);
+		});
+
+		return var_collection<DataDescriptor>{registry_table, std::move(data)};
 	}
 
 	keyed_var_collection<Key, DataDescriptor> global_keyed_collection() {
@@ -226,6 +232,16 @@ public:
 
 	void remove_registry(const std::string& name) {
 		mapped_registries.erase(name);
+	}
+
+	/**
+	 * Iterate over each registry
+	 */
+	template<typename Func>
+	void for_each(Func&& func){
+		for(auto& iter : mapped_registries){
+			func(iter);
+		}
 	}
 private:
 	std::map<std::string, std::unique_ptr<keyed_registry_variant>> mapped_registries;
