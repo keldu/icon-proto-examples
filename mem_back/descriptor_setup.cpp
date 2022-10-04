@@ -1,5 +1,6 @@
 #include "descriptor_registry.h"
 
+#include <cassert>
 #include <iostream>
 
 void simple_setup(){
@@ -47,7 +48,15 @@ void simple_setup(){
 	{
 		auto var_col = map.global_collection_variant();
 
+		var_col.for_each(
+			[](imb::var_descriptor& desc, std::variant<float*, int32_t*> var_val){
+				std::visit([](auto val){
+					assert(val);
 
+					std::cout<<"Value: "<<*val<<std::endl;
+				}, var_val);
+			}
+		);
 	}
 }
 

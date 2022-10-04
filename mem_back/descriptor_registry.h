@@ -105,6 +105,10 @@ public:
 		return descriptor_var_collection<D>{std::move(key_coll), name};
 	}
 
+	/**
+	 * Not super efficient, but functional
+	 * Especially the string part could be a const string_view since it's never changed
+	 */
 	descriptor_var_collection_variant<T...> global_collection_variant(){
 		std::vector<typename descriptor_var_collection_variant<T...>::data> variant_data;
 

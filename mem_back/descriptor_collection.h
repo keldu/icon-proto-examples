@@ -5,6 +5,7 @@
 
 #include <string>
 #include <variant>
+#include <cassert>
 
 namespace imb {
 template<typename... T>
@@ -94,6 +95,8 @@ public:
 		size_t id;
 		var_descriptor key;
 	};
+private:
+	template<typename... u> static constexpr bool always_false = false;
 public:
 	descriptor_var_collection_variant(descriptor_registry_map<T...>& maps_):
 		maps{&maps_}
@@ -122,13 +125,19 @@ public:
 	template<typename Func>
 	void for_each(Func&& func){
 		for(auto& iter: data){
-			auto reg = maps->find_registry_variant(iter.name);
-			if(reg){
+			auto reg = maps->find_registry_variant(iter.key.name);
+			if(!std::holds_alternative<std::monostate>(reg)){
 				auto var = std::visit([&iter](auto& arg) -> std::variant<T*...> {
-					auto& val = arg.at(iter.id);
-					return &val;
+					using TV = std::decay_t<decltype(arg)>;
+					if constexpr ( std::is_same_v<TV, std::monostate> ){
+						assert(false);
+						exit(-1);
+					}else {
+						auto& val = arg->at(iter.id);
+						return &val;
+					}
 				}
-				, *reg);
+				, reg);
 				
 				func(iter.key, var);
 			}
