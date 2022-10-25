@@ -50,8 +50,14 @@ void simple_setup(){
 
 		var_col.for_each(
 			[](imb::var_descriptor& desc, std::variant<float*, int32_t*> var_val){
-				std::visit([](auto val){
+				std::visit([&desc](auto val){
 					assert(val);
+					
+					std::cout<<"Descriptor: \""<<desc.name<<"\" ";
+					std::cout<<desc.location.jg<<" ";
+					std::cout<<desc.location.hgrid_id<<" ";
+					std::cout<<desc.location.vgrid_id<<" ";
+					std::cout<<desc.location.time_id<<" ";
 
 					std::cout<<"Value: "<<*val<<std::endl;
 				}, var_val);
