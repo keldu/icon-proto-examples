@@ -2,12 +2,45 @@
 
 #include "descriptor_registry.h"
 
+#include <cassert>
+#include <cstring>
+#include <limits>
+
 namespace imb {
 using descriptor_registry_map_spec = descriptor_registry_map<
 {%- for item in types %}
 	{{ item.c.type }}{{ "," if not loop.last}}
 {%- endfor %}
 >;
+}
+
+extern "C" {
+
+int descriptor_registry_context_create ( descriptor_registry_ctx* ctx ){
+	assert(ctx);
+	if(!ctx){
+		return -1;
+	}
+
+	ctx->internal = new (std::nothrow) imb::descriptor_registry_map_spec();
+
+	if(!ctx->internal){
+		return -1;
+	}
+
+	return 0;
+}
+
+void descriptor_registry_context_destroy ( descriptor_registry_ctx* ctx ){
+	assert(ctx);
+	if(!ctx){
+		return;
+	}
+
+	auto ptr = reinterpret_cast<imb::descriptor_registry_map_spec*>(ctx->internal);
+
+	delete ptr;
+}
 }
 
 {% for item in types %}
@@ -89,7 +122,7 @@ size_t descriptor_registry_{{ item.c.name }}_add_var( struct descriptor_registry
 	}
 	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
 
-	auto ptr = descriptor_registry_{{ item.c.type }}_find_impl(*map, registry->name);
+	auto ptr = descriptor_registry_{{ item.c.name }}_find_impl(*map, registry->name);
 	assert(ptr);
 	if(!ptr){
 		return std::numeric_limits<size_t>::max();
@@ -110,7 +143,7 @@ int var_collection_{{ item.c.name }}_create ( struct var_collection_{{ item.c.na
 	}
 
 	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
-	auto reg = descriptor_registry_{{ item.c.type }}_find_impl ( *map, registry->name );
+	auto reg = descriptor_registry_{{ item.c.name }}_find_impl ( *map, registry->name );
 
 	collection->internal = new (std::nothrow) imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >(reg->internal_registry(), reg->internal_registry_index());
 	collection->registry = registry;
@@ -129,7 +162,7 @@ int var_collection_{{ item.c.name }}_create_global ( struct var_collection_{{ it
 	}
 
 	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
-	auto reg = descriptor_registry_{{ item.c.type }}_find_impl ( *map, registry->name );
+	auto reg = descriptor_registry_{{ item.c.name }}_find_impl ( *map, registry->name );
 
 	auto var_ptr = new (std::nothrow) imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >(reg->internal_registry(), reg->internal_registry_index());
 	collection->internal = var_ptr;
@@ -184,7 +217,7 @@ void var_collection_{{ item.c.name }}_filter ( struct var_collection_{{ item.c.n
 	}
 	auto ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( collection->internal );
 
-	var_collection_{{ item.c.type }}_create( target, collection->registry);
+	var_collection_{{ item.c.name }}_create( target, collection->registry);
 	assert(target->internal);
 	if( !target->internal ){
 		return;
@@ -224,7 +257,7 @@ void var_collection_{{ item.c.name }}_concat ( struct var_collection_{{ item.c.n
 	auto left_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( left->internal );
 	auto right_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( right->internal );
 
-	var_collection_{{ item.c.type }}_create( target, left->registry);
+	var_collection_{{ item.c.name }}_create( target, left->registry);
 	assert(target->internal);
 	if( !target->internal ){
 		return;
@@ -247,7 +280,7 @@ void var_collection_{{ item.c.name }}_sort ( struct var_collection_{{ item.c.nam
 	
 	auto source_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( source->internal );
 	
-	var_collection_{{ item.c.type }}_create( sorted, source->registry );
+	var_collection_{{ item.c.name }}_create( sorted, source->registry );
 	assert(sorted->internal);
 	if( !sorted->internal ){
 		return;
