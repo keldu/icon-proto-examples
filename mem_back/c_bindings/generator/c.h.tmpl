@@ -1,0 +1,62 @@
+#pragma once
+
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+struct var_descriptor {
+	const char* name;
+	int32_t jg;
+	int32_t hgrid_id;
+	int32_t vgrid_id;
+	int32_t time_id;
+};
+
+struct descriptor_registry_ctx {
+	void* internal;
+};
+
+extern int descriptor_registry_context_create( struct descriptor_registry_ctx* ctx );
+
+extern void descriptor_registry_context_destroy( struct descriptor_registry_ctx* ctx );
+
+{% for item in types %}
+struct descriptor_registry_{{ item.c.name }} {
+	struct descriptor_registry_ctx* ctx = 0L;
+	char* name = 0L;
+};
+
+extern int descriptor_registry_{{ item.c.name }}_create ( struct descriptor_registry_{{ item.c.name }}* registry, const char* name, struct descriptor_registry_ctx* ctx );
+
+extern void descriptor_registry_{{ item.c.name }}_destroy ( struct descriptor_registry_{{ item.c.name }}* registry );
+
+extern size_t descriptor_registry_{{ item.c.name }}_add_var ( struct descriptor_registry_{{ item.c.name }}* registry, struct var_descriptor* descriptor, {{ item.c.type }} variable);
+
+struct var_collection_{{ item.c.name }} {
+	void* internal = 0L;
+	struct descriptor_registry_{{ item.c.name }}* registry = 0L;
+};
+
+extern int var_collection_{{ item.c.name }}_create ( struct var_collection_{{ item.c.name }}* collection, struct descriptor_registry_{{ item.c.name }}* registry);
+
+extern int var_collection_{{ item.c.name }}_create_global ( struct var_collection_{{ item.c.name }}* collection, struct descriptor_registry_{{ item.c.name }}* registry);
+
+extern void var_collection_{{ item.c.name }}_destroy ( struct var_collection_{{ item.c.name }}* collection);
+
+extern void var_collection_{{ item.c.name }}_for_each ( struct var_collection_{{ item.c.name }}* collection, void (*func)( const struct var_descriptor*, {{ item.c.type }} ) );
+
+extern void var_collection_{{ item.c.name }}_filter ( struct var_collection_{{ item.c.name }}* target, struct var_collection_{{ item.c.name }}* collection, int (*func)( const struct var_descriptor*, {{ item.c.type }} ) );
+
+extern void var_collection_{{ item.c.name }}_concat ( struct var_collection_{{ item.c.name }}* target, struct var_collection_{{ item.c.name }}* left, struct var_collection_{{ item.c.name }}* right);
+
+extern void var_collection_{{ item.c.name }}_sort ( struct var_collection_{{ item.c.name }}* sorted, struct var_collection_{{ item.c.name }}* source, int (*func)(const struct var_descriptor*, {{ item.c.type }}, const struct var_descriptor*, {{ item.c.type }} ) );
+
+{% endfor %}
+
+#ifdef __cplusplus
+}
+#endif

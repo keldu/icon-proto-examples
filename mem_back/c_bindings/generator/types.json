@@ -2,34 +2,74 @@
 	"output_name" : "binding",
 	"types" : [
 		{
-			"type" : "Float32"
+			"type" : "Float32",
+			"c" : {
+				"type" : "float",
+				"name" : "float32"
+			}
 		},
 		{
-			"type" : "Float64"
+			"type" : "Float64",
+			"c" : {
+				"type" : "double",
+				"name" : "float64"
+			}
 		},
 		{
-			"type" : "UInt8"
+			"type" : "UInt8",
+			"c" : {
+				"type" : "uint8_t",
+				"name" : "uint8"
+			}
 		},
 		{
-			"type" : "UInt16"
+			"type" : "UInt16",
+			"c" : {
+				"type" : "uint16_t",
+				"name" : "uint16"
+			}
 		},
 		{
-			"type" : "UInt32"
+			"type" : "UInt32",
+			"c" : {
+				"type" : "uint32_t",
+				"name" : "uint32"
+			}
 		},
 		{
-			"type" : "UInt64"
+			"type" : "UInt64",
+			"c" : {
+				"type" : "uint64_t",
+				"name" : "uint64"
+			}
 		},
 		{
-			"type" : "Int8"
+			"type" : "Int8",
+			"c" : {
+				"type" : "int8_t",
+				"name" : "int8"
+			}
 		},
 		{
-			"type" : "Int16"
+			"type" : "Int16",
+			"c" : {
+				"type" : "int16_t",
+				"name" : "int16"
+			}
 		},
 		{
-			"type" : "Int32"
+			"type" : "Int32",
+			"c" : {
+				"type" : "int32_t",
+				"name" : "int32"
+			}
 		},
 		{
-			"type" : "Int64"
+			"type" : "Int64",
+			"c" : {
+				"type" : "int64_t",
+				"name" : "int64"
+			}
 		}
 	]
 }

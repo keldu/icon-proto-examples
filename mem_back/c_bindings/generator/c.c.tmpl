@@ -1,0 +1,278 @@
+#include "binding.h"
+
+#include "descriptor_registry.h"
+
+namespace imb {
+using descriptor_registry_map_spec = descriptor_registry_map<
+{%- for item in types %}
+	{{ item.c.type }}{{ "," if not loop.last}}
+{%- endfor %}
+>;
+}
+
+{% for item in types %}
+imb::keyed_registry< imb::var_location, {{ item.c.type }} > * descriptor_registry_{{ item.c.name }}_find_impl( imb::descriptor_registry_map_spec& map, const char* name ){
+	auto ptr = map.find_registry < {{ item.c.type }} > ( std::string{name} );
+	return ptr;
+}
+
+extern "C" {
+
+int descriptor_registry_{{ item.c.name }}_create( struct descriptor_registry_{{ item.c.name }}* registry, const char* name, struct descriptor_registry_ctx* ctx){
+	assert(ctx);
+	if(!ctx){
+		return -1;
+	}
+
+	assert(registry);
+	if(!registry){
+		return -1;
+	}
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(ctx->internal);
+
+	map->add_registry< {{ item.c.type }} > ( std::string{name} );
+
+	auto internal = map->find_registry< {{ item.c.type }} > ( std::string{name} );
+	if(!internal){
+		return -1;
+	}
+
+	registry->ctx = ctx;
+
+	size_t name_size = strlen(name);
+	char *name_ptr = static_cast<char*>(malloc(sizeof(char)*(name_size+1)));
+	strncpy(name_ptr, name, name_size+1);
+	
+	registry->name = name_ptr;
+
+	return 0;
+}
+
+void descriptor_registry_{{ item.c.name }}_destroy( struct descriptor_registry_{{ item.c.name }}* registry ){
+	assert(registry);
+
+	if(!registry){
+		return;
+	}
+
+	assert(registry->ctx);
+	if(!registry->ctx){
+		return;
+	}
+
+	assert(registry->name);
+	if(!registry->name){
+		return;
+	}
+
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
+	assert(map);
+	if(!map){
+		return;
+	}
+
+	/// @todo implement
+	// map->remove(name);
+
+	free(registry->name);
+}
+
+size_t descriptor_registry_{{ item.c.name }}_add_var( struct descriptor_registry_{{ item.c.name }}* registry, struct var_descriptor* descriptor, {{ item.c.type }} value ){
+	assert(registry);
+	if(!registry){
+		return std::numeric_limits<size_t>::max();
+	}
+
+	assert(registry->ctx);
+	if(!registry->ctx){
+		return std::numeric_limits<size_t>::max();
+	}
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
+
+	auto ptr = descriptor_registry_{{ item.c.type }}_find_impl(*map, registry->name);
+	assert(ptr);
+	if(!ptr){
+		return std::numeric_limits<size_t>::max();
+	}
+
+	static size_t i = 0;
+
+	/// @todo convert desc to location
+	imb::var_location location;
+
+	return ptr->add_var(imb::var_location{static_cast<int32_t>(i++), 1,1,1}, value);
+}
+
+int var_collection_{{ item.c.name }}_create ( struct var_collection_{{ item.c.name }}* collection, struct descriptor_registry_{{ item.c.name }}* registry ){
+	assert( collection && registry && registry->ctx );
+	if( ! ( collection && registry && registry->ctx ) ){
+		return -1;
+	}
+
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
+	auto reg = descriptor_registry_{{ item.c.type }}_find_impl ( *map, registry->name );
+
+	collection->internal = new (std::nothrow) imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >(reg->internal_registry(), reg->internal_registry_index());
+	collection->registry = registry;
+
+	if(! collection->internal ){
+		return -1;
+	}
+
+	return 0;
+}
+
+int var_collection_{{ item.c.name }}_create_global ( struct var_collection_{{ item.c.name }}* collection, struct descriptor_registry_{{ item.c.name }}* registry ) {
+	assert( collection && registry && registry->ctx );
+	if ( ! ( collection && registry && registry->ctx ) ){
+		return -1;
+	}
+
+	auto map = reinterpret_cast<imb::descriptor_registry_map_spec*>(registry->ctx->internal);
+	auto reg = descriptor_registry_{{ item.c.type }}_find_impl ( *map, registry->name );
+
+	auto var_ptr = new (std::nothrow) imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >(reg->internal_registry(), reg->internal_registry_index());
+	collection->internal = var_ptr;
+	collection->registry = registry;
+
+	(*var_ptr) = std::move(reg->global_keyed_collection());
+	
+	if(! collection->internal ){
+		return -1;
+	}
+
+	return 0;
+}
+
+void var_collection_{{ item.c.name }}_destroy ( struct var_collection_{{ item.c.name }}* collection ){
+	assert(collection && collection->internal);
+	if(! ( collection && collection->internal ) ){
+		return;
+	}
+	delete reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* > ( collection->internal );
+}
+
+void var_collection_{{ item.c.name }}_for_each ( struct var_collection_{{ item.c.name }}* collection, void (*func)( const struct var_descriptor*, {{ item.c.type }} ) ) {
+	assert(collection && collection->internal );
+	if(! ( collection && collection->internal ) ){
+		return;
+	}
+	auto ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( collection->internal );
+
+	ptr->for_each([&](const imb::var_location& first, {{ item.c.type }} second){
+		struct var_descriptor desc;
+		
+		desc.name = "";
+		desc.jg = first.jg;
+		desc.hgrid_id = first.hgrid_id;
+		desc.vgrid_id = first.vgrid_id;
+		desc.time_id = first.time_id;
+
+		func(&desc, second);
+	});
+}
+
+void var_collection_{{ item.c.name }}_filter ( struct var_collection_{{ item.c.name }}* target, struct var_collection_{{ item.c.name }}* collection, int (*func)( const struct var_descriptor*,  {{ item.c.type }} ) ) {
+	assert(collection && collection->internal );
+	if(! ( collection && collection->internal ) ){
+		return;
+	}
+
+	assert( target && ! target->internal );
+	if(! ( target && ! target->internal ) ){
+		return;
+	}
+	auto ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( collection->internal );
+
+	var_collection_{{ item.c.type }}_create( target, collection->registry);
+	assert(target->internal);
+	if( !target->internal ){
+		return;
+	}
+	auto target_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( target->internal );
+	
+	*target_ptr = ptr->filter([&](const imb::var_location& first, {{ item.c.type }} second) -> bool{
+		struct var_descriptor desc;
+
+		desc.name = "";
+		desc.jg = first.jg;
+		desc.hgrid_id = first.hgrid_id;
+		desc.vgrid_id = first.vgrid_id;
+		desc.time_id = first.time_id;
+
+		return func(&desc, second) != 0 ? true : false;
+	});
+}
+
+void var_collection_{{ item.c.name }}_concat ( struct var_collection_{{ item.c.name }}* target, struct var_collection_{{ item.c.name }}* left, struct var_collection_{{ item.c.name }}* right){
+	assert(left && left->internal );
+	if(! ( left && left->internal ) ){
+		return;
+	}
+	assert(right && right->internal );
+	if(! ( right && right->internal ) ){
+		return;
+	}
+	assert(right->registry == left->registry);
+	if(!(right->registry == left->registry)){
+		return;
+	}
+	assert( target && ! target->internal );
+	if(! ( target && ! target->internal ) ){
+		return;
+	}
+	auto left_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( left->internal );
+	auto right_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( right->internal );
+
+	var_collection_{{ item.c.type }}_create( target, left->registry);
+	assert(target->internal);
+	if( !target->internal ){
+		return;
+	}
+	auto target_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( target->internal );
+
+	*target_ptr = left_ptr->concat(*right_ptr);
+}
+
+void var_collection_{{ item.c.name }}_sort ( struct var_collection_{{ item.c.name }}* sorted, struct var_collection_{{ item.c.name }}* source, int (*func)(const struct var_descriptor*left_d, {{ item.c.type }} left_v, const struct var_descriptor* right_d, {{ item.c.type }} right_v ) ){
+	assert(sorted && !sorted->internal );
+	if(! ( sorted && !sorted->internal ) ){
+		return;
+	}
+
+	assert(source && source->internal );
+	if(! ( source && source->internal ) ){
+		return;
+	}
+	
+	auto source_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( source->internal );
+	
+	var_collection_{{ item.c.type }}_create( sorted, source->registry );
+	assert(sorted->internal);
+	if( !sorted->internal ){
+		return;
+	}
+
+	auto sorted_ptr = reinterpret_cast< imb::keyed_var_collection< imb::var_location, {{ item.c.type }} >* >( sorted->internal );
+	*sorted_ptr = source_ptr->sort([&](const std::pair<imb::var_location, {{ item.c.type }}>& left, const std::pair<imb::var_location, {{ item.c.type }}>& right) -> bool{
+		struct var_descriptor desc_left;
+
+		desc_left.name = "";
+		desc_left.jg = left.first.jg;
+		desc_left.hgrid_id = left.first.hgrid_id;
+		desc_left.vgrid_id = left.first.vgrid_id;
+		desc_left.time_id = left.first.time_id;
+		
+		struct var_descriptor desc_right;
+
+		desc_right.name = "";
+		desc_right.jg = right.first.jg;
+		desc_right.hgrid_id = right.first.hgrid_id;
+		desc_right.vgrid_id = right.first.vgrid_id;
+		desc_right.time_id = right.first.time_id;
+
+		return func(&desc_left, left.second, &desc_right, right.second) != 0 ? true : false;
+	});
+}
+} // end extern "C"
+{% endfor %}
