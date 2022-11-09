@@ -2,6 +2,7 @@
 
 #include "key_registry.h"
 #include "var_descriptor.h"
+#include "descriptor_collection.h"
 
 #include <variant>
 #include <optional>
@@ -40,7 +41,7 @@ public:
 	/**
 	 * find a var
 	 */
-	std::variant<T*...> find_variant_variable(const var_descriptor& desc){
+	std::variant<T*...> find_variable_variant(const var_descriptor& desc){
 		keyed_registry_variant_ptr registry = maps.find_registry_variant(desc.name);
 
 		if(!registry){
@@ -63,9 +64,9 @@ public:
 		if(!registry){
 			return nullptr;
 		}
-		
+
 		auto& specific_reg = std::get<imb::keyed_registry<imb::var_location, D>>(registry);
-		
+
 		return specific_reg.find(desc.location);
 	}
 
@@ -91,6 +92,47 @@ public:
 		return 0;
 	}
 
+	template<typename D>
+	std::optional<descriptor_var_collection<D>> global_collection_of(const std::string& name){
+		auto reg = this->template find_registry<D>(name);
+
+		if(!reg){
+			return std::nullopt;
+		}
+
+		auto key_coll = reg->global_keyed_collection();
+
+		return descriptor_var_collection<D>{std::move(key_coll), name};
+	}
+
+	/**
+	 * Not super efficient, but functional
+	 * Especially the string part could be a const string_view since it's never changed
+	 */
+	descriptor_var_collection_variant<T...> global_collection_variant(){
+		std::vector<typename descriptor_var_collection_variant<T...>::data> variant_data;
+
+		maps.for_each([&](auto& name_and_registry){
+			std::visit([&](auto& reg){
+
+				auto collection = reg.global_keyed_collection();
+
+				const auto& raw_data = collection.raw_data();
+
+				variant_data.reserve(variant_data.size() + raw_data.size());
+
+				for(const auto& iter : raw_data){
+					/**
+					 * 1. id
+					 * 2. key
+					 */
+					variant_data.emplace_back(typename descriptor_var_collection_variant<T...>::data{iter.second, {name_and_registry.first, iter.first}});
+				}
+			}, *name_and_registry.second);
+		});
+
+		return {*this, std::move(variant_data)};
+	}
 private:
 	keyed_registry_map<var_location, T...> maps;
 };

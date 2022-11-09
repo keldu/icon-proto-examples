@@ -30,14 +30,7 @@ if __name__ == "__main__":
     [file_location, template_folder, root_dir] = parse_args();
     json_obj = parse_json_file(root_dir + file_location);
 
-    var_map = {};
-
-    var_map["TYPES"] = [];
-
-    for type_var in json_obj["types"]:
-        var_map["TYPES"].append(type_var["type"])
-
-    var_map["OUTPUT_NAME"] = json_obj["output_name"];
+    var_map = json_obj;
 
     c_bindings.generate(root_dir + template_folder, var_map);
 

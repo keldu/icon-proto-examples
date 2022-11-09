@@ -1,5 +1,7 @@
 #!/bin/false
 
+import jinja2;
+
 lang_translation_map = {
     "Float32": "float",
     "Float64": "double",
@@ -13,76 +15,22 @@ lang_translation_map = {
     "UInt64" : "uint64_t"
 };
 
-def replace_variable(tmpl_text, variable_name, variable_value):
-    return tmpl_text.replace("${"+variable_name+"}", variable_value);
+def generate_file(tmpl_path, output_name, variable_map):
+    file = open(tmpl_path, "r");
 
-def generate_file_loop():
+    content = file.read();
+
+    template = jinja2.Template(content);
+
+    result = template.render(types=variable_map["types"]);
     
-    loop_stack = [];
+    out_file = open(output_name, 'w');
+    out_file.write(result);
 
-    pass
-
-def generate_file(ext, tmpl_folder, variable_map):
-    if tmpl_folder[-1] == "/":
-        tmpl_folder = tmpl_folder[:-1];
-
-    names = ["header", "header_body", "header_footer", "body", "footer"];
-    for index, val in enumerate(names):
-        names[index] = tmpl_folder + "/" + names[index] + ext + ".tmpl";
-
-    output_name = variable_map["OUTPUT_NAME"];
-
-    tmpl_text = [];
-
-    for file_name in names:
-        tmpl_file = open(file_name, "r");
-        tmpl_text.append(tmpl_file.read());
-
-    generated_text = [];
-
-    text = tmpl_text[0];
-    text = replace_variable(text, "OUTPUT_NAME", variable_map["OUTPUT_NAME"]);
-
-    generated_text.append(text);
-
-    type_list = variable_map["TYPES"];
-    
-    for t in type_list:
-        generated_text.append(replace_variable(tmpl_text[1], "TYPE", lang_translation_map[t]));
-    
-    ## Hack for last comma
-    generated_text[-1] = generated_text[-1][:len(generated_text[-1])-2]+ "\n";
-
-    text = replace_variable(tmpl_text[2], "OUTPUT_NAME", variable_map["OUTPUT_NAME"]);
-    generated_text.append(text);
-
-    for t in type_list:
-        generated_text.append(replace_variable(tmpl_text[3], "TYPE", lang_translation_map[t]));
-
-    text = replace_variable(tmpl_text[4], "OUTPUT_NAME", variable_map["OUTPUT_NAME"]);
-    generated_text.append(text);
-
-    text = "";
-
-    for gt in generated_text:
-        text = text + gt;
-
-    output_file = open(output_name + ext, 'w');
-    output_file.write(text);
-    pass
-
-def generate_header(tmpl_folder, variable_map):
-    generate_file(".h", tmpl_folder, variable_map);
-    pass
-
-def generate_source(tmpl_folder, variable_map):
-    generate_file(".cpp", tmpl_folder, variable_map);
-    pass
-
-def generate_definition_helper(variable_map):
     pass
 
 def generate(tmpl_folder, variable_map):
-    generate_header(tmpl_folder, variable_map);
-    generate_source(tmpl_folder, variable_map);
+    generate_file(tmpl_folder+"c.h.tmpl", tmpl_folder + "../binding.h", variable_map);
+    generate_file(tmpl_folder+"c.c.tmpl", tmpl_folder + "../binding.cpp", variable_map);
+
     pass
