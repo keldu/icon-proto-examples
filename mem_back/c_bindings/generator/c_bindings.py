@@ -2,18 +2,6 @@
 
 import jinja2;
 
-lang_translation_map = {
-    "Float32": "float",
-    "Float64": "double",
-    "Int8"   : "int8_t",
-    "Int16"  : "int16_t",
-    "Int32"  : "int32_t",
-    "Int64"  : "int64_t",
-    "UInt8"  : "uint8_t",
-    "UInt16" : "uint16_t",
-    "UInt32" : "uint32_t",
-    "UInt64" : "uint64_t"
-};
 
 def generate_file(tmpl_path, output_name, variable_map):
     file = open(tmpl_path, "r");

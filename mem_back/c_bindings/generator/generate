@@ -4,6 +4,7 @@ import argparse;
 import json;
 
 import c_bindings;
+import fortran_bindings;
 
 
 def parse_args():
@@ -33,5 +34,6 @@ if __name__ == "__main__":
     var_map = json_obj;
 
     c_bindings.generate(root_dir + template_folder, var_map);
+    fortran_bindings.generate(root_dir + template_folder, var_map);
 
     pass
