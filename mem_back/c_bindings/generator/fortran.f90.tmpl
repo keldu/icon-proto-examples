@@ -11,13 +11,13 @@ module mo_registry_interface
 		subroutine create_context( this_ctx ) bind(c, name='descriptor_registry_context_create')
 			import :: descriptor_registry_ctx
 			import :: c_ptr
-			type(descriptor_registry_ctx), pointer intent(out) :: this_ctx
+			type(descriptor_registry_ctx), pointer, intent(out) :: this_ctx
 		end subroutine create_context
 
 		subroutine destroy_context( this_ctx ) bind(c, name='descriptor_registry_context_destroy')
 			import :: descriptor_registry_ctx
 			import :: c_ptr
-			type(descriptor_registry_ctx), pointer intent(in) :: this_ctx
+			type(descriptor_registry_ctx), pointer, intent(in) :: this_ctx
 		end subroutine destroy_context
 	end interface
 end module mo_registry_interface

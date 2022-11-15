@@ -4,7 +4,7 @@ CXX=g++
 CC=gcc
 CXXFLAGS=-std=c++20 -DNDEBUG -O3
 FORTRAN=gfortran
-FFLAGS=-cpp -lstdc++ -O3 -Wall -fbacktrace -std=f2018 -std=c++20 -fcheck=all
+FFLAGS=-cpp -lstdc++ -O3 -Wall -fbacktrace -std=f2018 -fcheck=all
 
 all: define_test define_fortran_test binding.so
 
@@ -33,7 +33,7 @@ define_test: define_test.c binding.o
 	${CXX} define_test.c binding.o -o define_test.bin
 
 define_fortran_test: define_test.f90 binding.so binding.mod
-	${FORTRAN} ${FFLAGS} binding.mod define_test.f90 -W,rpath=. -lbinding -o define_test.fortran.bin
+	${FORTRAN} ${FFLAGS} binding.mod define_test.f90 -Wl,-rpath=. -L=. -l:binding.so -o define_test.fortran.bin
 
 clean:
 	rm *.so *.os *.o *.bin
