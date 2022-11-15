@@ -137,6 +137,7 @@ private:
 	keyed_registry_map<var_location, T...> maps;
 };
 
+/*
 template<typename... T>
 class descriptor_var_collection {
 public:
@@ -148,4 +149,5 @@ private:
 	};
 	std::vector<internal_index> data;
 };
+*/
 }
