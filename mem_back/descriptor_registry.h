@@ -136,4 +136,16 @@ public:
 private:
 	keyed_registry_map<var_location, T...> maps;
 };
+
+template<typename... T>
+class descriptor_var_collection {
+public:
+	
+private:
+	struct internal_index {
+		size_t id;
+		size_t reg;
+	};
+	std::vector<internal_index> data;
+};
 }
