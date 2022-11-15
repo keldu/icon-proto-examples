@@ -32,8 +32,8 @@ binding.so: binding.os
 define_test: define_test.c binding.o
 	${CXX} define_test.c binding.o -o define_test.bin
 
-define_fortran_test: define_test.f90 binding.o binding.mod
-	${FORTRAN} ${FFLAGS} binding.mod define_test.f90 binding.o -lgfortran -o define_test.fortran.bin
+define_fortran_test: define_test.f90 binding.so binding.mod
+	${FORTRAN} ${FFLAGS} binding.mod define_test.f90 -W,rpath=. -lbinding -o define_test.fortran.bin
 
 clean:
 	rm *.so *.os *.o *.bin
