@@ -8,7 +8,8 @@
 				"name" : "float32"
 			},
 			"fortran" : {
-				"type" : "c_float"
+				"type" : "c_float",
+				"var_type" : "REAL"
 			}
 		},
 		{
@@ -18,7 +19,8 @@
 				"name" : "float64"
 			},
 			"fortran" : {
-				"type" : "c_double"
+				"type" : "c_double",
+				"var_type" : "REAL"
 			}
 		},
 		{
@@ -28,7 +30,8 @@
 				"name" : "uint8"
 			},
 			"fortran" : {
-				"type" : "c_int8_t"
+				"type" : "c_int8_t",
+				"var_type" : "INTEGER"
 			}
 		},
 		{
@@ -38,7 +41,8 @@
 				"name" : "uint16"
 			},
 			"fortran" : {
-				"type" : "c_int16_t"
+				"type" : "c_int16_t",
+				"var_type" : "INTEGER"
 			}
 		},
 		{
@@ -48,7 +52,8 @@
 				"name" : "uint32"
 			},
 			"fortran" : {
-				"type" : "c_int32_t"
+				"type" : "c_int32_t",
+				"var_type" : "INTEGER"
 			}
 		},
 		{
@@ -58,7 +63,8 @@
 				"name" : "uint64"
 			},
 			"fortran" : {
-				"type" : "c_int64_t"
+				"type" : "c_int64_t",
+				"var_type" : "INTEGER"
 			}
 		},
 		{
@@ -68,7 +74,8 @@
 				"name" : "int8"
 			},
 			"fortran" : {
-				"type" : "c_int8_t"
+				"type" : "c_int8_t",
+				"var_type" : "INTEGER"
 			}
 		},
 		{
@@ -78,7 +85,8 @@
 				"name" : "int16"
 			},
 			"fortran" : {
-				"type" : "c_int16_t"
+				"type" : "c_int16_t",
+				"var_type" : "INTEGER"
 			}
 		},
 		{
@@ -88,7 +96,8 @@
 				"name" : "int32"
 			},
 			"fortran" : {
-				"type" : "c_int32_t"
+				"type" : "c_int32_t",
+				"var_type" : "INTEGER"
 			}
 		},
 		{
@@ -98,7 +107,8 @@
 				"name" : "int64"
 			},
 			"fortran" : {
-				"type" : "c_int64_t"
+				"type" : "c_int64_t",
+				"var_type" : "INTEGER"
 			}
 		}
 	]

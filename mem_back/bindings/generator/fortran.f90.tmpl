@@ -1,78 +1,84 @@
 module mo_registry_interface
-	use, intrinsic :: iso_c_binding
+  use, intrinsic :: iso_c_binding
 
-	implicit none
+  implicit none
 
-	type, bind(C) :: descriptor_registry_ctx
-		type(c_ptr) :: internal
-	end type descriptor_registry_ctx
+  type, bind(C) :: descriptor_registry_ctx
+    type(c_ptr) :: internal
+  end type descriptor_registry_ctx
 
-	type, bind(C) :: var_descriptor
-		type(c_ptr) :: name
-		type(c_int) :: jg
-		type(c_int) :: hgrid_id
-		type(c_int) :: vgrid_id
-		type(c_int) :: time_id
-	end type var_descriptor
-
-{%- for item in types %}
-	type, bind(C) :: descriptor_registry_{{ item.c.name }}
-		type(c_ptr) :: ctx
-		type(c_ptr) :: name
-	end type descriptor_registry_{{ item.c.name }}
-
-	type, bind(C) :: var_collection_{{ item.c.name }}
-		type(c_ptr) :: internal
-		type(c_ptr) :: registry
-	end type var_collection_{{ item.c.name }}
-{%- endfor %}
-
-	interface
-		subroutine create_context( this_ctx ) bind(c, name='descriptor_registry_context_create')
-			import :: descriptor_registry_ctx
-			import :: c_ptr
-			type(descriptor_registry_ctx), pointer, intent(out) :: this_ctx
-		end subroutine create_context
-
-		subroutine destroy_context( this_ctx ) bind(c, name='descriptor_registry_context_destroy')
-			import :: descriptor_registry_ctx
-			import :: c_ptr
-			type(descriptor_registry_ctx), pointer, intent(in) :: this_ctx
-		end subroutine destroy_context
+  type, bind(C) :: var_descriptor
+    type(c_ptr) :: name
+    INTEGER(c_int) :: jg
+    INTEGER(c_int) :: hgrid_id
+    INTEGER(c_int) :: vgrid_id
+    INTEGER(c_int) :: time_id
+  end type var_descriptor
 
 {%- for item in types %}
-		subroutine descriptor_registry_{{ item.c.name }}_create ( name, ctx ) bind(c, name='descriptor_registry_{{ item.c.name }}_create')
-			import :: descriptor_registry_ctx
-			import :: c_ptr
-			type(c_ptr) :: name
-			type(descriptor_registry_ctx), pointer :: ctx
-		end subroutine descriptor_registry_{{ item.c.name }}_create
+  type, bind(C) :: descriptor_registry_{{ item.c.name }}
+    type(c_ptr) :: ctx
+    type(c_ptr) :: name
+  end type descriptor_registry_{{ item.c.name }}
 
-		subroutine descriptor_registry_{{ item.c.name }}_destroy ( registry ) bind(c, name='descriptor_registry_{{ item.c.name }}_destroy')
-			type() :: registry
-		end subroutine descriptor_registry_{{ item.c.name }}_destroy
+  type, bind(C) :: var_collection_{{ item.c.name }}
+    type(c_ptr) :: internal
+    type(c_ptr) :: registry
+  end type var_collection_{{ item.c.name }}
+{%- endfor %}
 
-		subroutine descriptor_registry_{{ item.c.name }}_add_var ( registry, descriptor, variable ) bind(c, name='descriptor_registry_{{ item.c.name }}_add_var')
-			type(c_ptr) :: registry
-			type(c_ptr) :: descriptor
-			type({{ item.fortran.type }}) :: variable
-		end subroutine descriptor_registry_{{ item.c.name }}_add_var
+  interface
+    subroutine create_context( this_ctx ) bind(c, name='descriptor_registry_context_create')
+      import :: descriptor_registry_ctx
+      import :: c_ptr
+      type(descriptor_registry_ctx), pointer, intent(out) :: this_ctx
+    end subroutine create_context
 
-		subroutine var_collection_{{ item.c.name }}_create ( collection, registry ) bind(c, name='var_collection_{{ item.c.name }}_create')
-			type(c_ptr) :: collection
-			type(c_ptr) :: registry
-		end subroutine var_collection_{{ item.c.name }}_create
+    subroutine destroy_context( this_ctx ) bind(c, name='descriptor_registry_context_destroy')
+      import :: descriptor_registry_ctx
+      import :: c_ptr
+      type(descriptor_registry_ctx), pointer, intent(in) :: this_ctx
+    end subroutine destroy_context
 
-		subroutine var_collection_{{ item.c.name }}_create_global ( collection, registry ) bind(c, name='var_collection_{{ item.c.name }}_create_global')
-			type(c_ptr) :: collection
-			type(c_ptr) :: registry
-		end subroutine var_collection_{{ item.c.name }}_create_global
+{%- for item in types %}
+    subroutine descriptor_registry_{{ item.c.name }}_create ( name, ctx ) bind(c, name='descriptor_registry_{{ item.c.name }}_create')
+      import :: descriptor_registry_ctx
+      import :: c_ptr
+      type(c_ptr) :: name
+      type(descriptor_registry_ctx), pointer :: ctx
+    end subroutine descriptor_registry_{{ item.c.name }}_create
 
-		subroutine var_collection_{{ item.c.name }}_destroy ( collection ) bind(c, name='var_collection_{{ item.c.name }}_destroy')
-			type(c_ptr) :: collection
-		end subroutine var_collection_{{ item.c.name }}_destroy
+    subroutine descriptor_registry_{{ item.c.name }}_destroy ( registry ) bind(c, name='descriptor_registry_{{ item.c.name }}_destroy')
+      import :: c_ptr
+      type(c_ptr) :: registry
+    end subroutine descriptor_registry_{{ item.c.name }}_destroy
+
+    subroutine descriptor_registry_{{ item.c.name }}_add_var ( registry, descriptor, var ) bind(c, name='descriptor_registry_{{ item.c.name }}_add_var')
+      import :: c_ptr
+      import :: {{ item.fortran.type }}
+      type(c_ptr) :: registry
+      type(c_ptr) :: descriptor
+      {{ item.fortran.var_type }}({{ item.fortran.type }}) :: var
+    end subroutine descriptor_registry_{{ item.c.name }}_add_var
+
+    subroutine var_collection_{{ item.c.name }}_create ( collection, registry ) bind(c, name='var_collection_{{ item.c.name }}_create')
+      import :: c_ptr
+      type(c_ptr) :: collection
+      type(c_ptr) :: registry
+    end subroutine var_collection_{{ item.c.name }}_create
+
+    subroutine var_collection_{{ item.c.name }}_create_global ( collection, registry ) bind(c, name='var_collection_{{ item.c.name }}_create_global')
+      import :: c_ptr
+      type(c_ptr) :: collection
+      type(c_ptr) :: registry
+    end subroutine var_collection_{{ item.c.name }}_create_global
+
+    subroutine var_collection_{{ item.c.name }}_destroy ( collection ) bind(c, name='var_collection_{{ item.c.name }}_destroy')
+      import :: c_ptr
+      type(c_ptr) :: collection
+    end subroutine var_collection_{{ item.c.name }}_destroy
 
 {%- endfor %}
-	end interface
+  end interface
 end module mo_registry_interface
 
