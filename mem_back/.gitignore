@@ -7,4 +7,5 @@ build/
 *binding.cpp
 *binding.h
 *binding.f90
+*.mod
 __pycache__
