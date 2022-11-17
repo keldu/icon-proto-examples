@@ -26,7 +26,7 @@ cuda: cuda/setup.cpp build_dir
 	${NVCC} ${CXXFLAGS} -o build/cuda_setup cuda/setup.cpp
 
 bindings:
-	make -C c_bindings
+	make -C bindings
 
 clean:
 	rm -rf build
