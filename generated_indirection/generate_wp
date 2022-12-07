@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
 
+import argparse;
 import jinja2;
 import os;
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Example stuff");
+    parser.add_argument('--type', default="float");
+    parser.add_argument('--name', default="float32");
+
+    args = parser.parse_args();
+
     file=open("generated.h.tmpl", "r");
     content = file.read();
 
     template = jinja2.Template(content);
 
-    vals = {"type":"float", "name":"float32"};
+    vals = {"type":args.type, "name":args.name};
     result = template.render(item = vals);
     w_file = open("generated.h", "w");
     w_file.write(result);

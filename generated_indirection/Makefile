@@ -1,15 +1,12 @@
-PHONY: all build_dir clean
+PHONY: all clean
 
 all: example
 
-generated.h: generate.h.tmpl
-	python3 generate_wp
+generated.h:
+	python3 generate_wp --type double --name float64
 
-example: example.c binding.c generated.h.tmpl
+example: example.c binding.c generated.h
 	gcc example.c binding.c -o example
 
-build_dir:
-	mkdir -p build/
-
 clean:
-	rm -rf build/
+	rm -f example generated.h
