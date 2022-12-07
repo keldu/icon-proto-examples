@@ -42,7 +42,7 @@ int main(){
 		return -2;
 	}
 
-	// Dummy desc for now. Too lazy to set values for now. Unique desc are generated in the add_var functionality
+	// Dummy desc for now. Too lazy to set values. Unique desc are generated in the add_var functionality
 	struct var_descriptor desc;
 
 	size_t id = descriptor_registry_float32_add_var(&reg_float, &desc, 5.f);

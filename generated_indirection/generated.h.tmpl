@@ -1,0 +1,7 @@
+#pragma once
+
+#include "binding.h"
+
+void print_var_wp ( {{ item.type }} x ){
+	print_var_{{ item.name }}( x );
+}
