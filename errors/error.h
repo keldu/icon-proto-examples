@@ -16,15 +16,27 @@ private:
 
 	std::variant<std::string, std::string_view> message_variant;
 public:
-	error(int64_t ec_, std::variant<std::string, std::string_view> msg_);
+	error(int64_t ec_, std::string_view cat_name_, std::variant<std::string, std::string_view> msg_);
 
 	int64_t code() const {
 		return error_code;
 	}
 
+	std::string_view name() const {
+		return category_name;
+	}
+
+	std::string_view message() const {
+		return std::visit([](auto& arg) -> std::string_view{
+			return arg;
+		}, message_variant);
+	}
+
 	template<typename T>
 	bool is_type() const;
+
 };
+
 
 template<typename T>
 int64_t& get_id_helper(){
@@ -45,6 +57,11 @@ private:
 	static std::vector<error_category> error_categories;
 public:
 	static int64_t new_error_type(std::string_view name, bool is_critical);
+
+	template<typename T>
+	static int64_t get_error_id(){
+		return get_id_helper<T>();
+	}
 
 	/**
 	 * Setup which allows for the use of typed templates
@@ -93,6 +110,20 @@ public:
 template< typename T >
 bool error::is_type() const {
 	return error_registry::template is_error_type<T>(error_code);
+}
+
+template <typename T>
+void register_error(std::string_view name, bool is_critical){
+	error_registry::get_or_new_error_id<T>(name, is_critical);
+}
+
+template <typename T>
+error make_error(const std::string& msg){
+	auto id = error_registry::get_error_id<T>();
+	
+	auto cat = error_registry::get_category_name(id);
+
+	return error { id, cat, msg };
 }
 
 template<typename T>
@@ -147,4 +178,14 @@ public:
 };
 
 
+}
+
+namespace std {
+std::ostream& operator<<(std::ostream& stream, const imb::error& err);
+/*
+{
+	std::cout<<err.name()<<" "<<err.code()<<" "<<err.message();
+	return stream;
+}
+*/
 }
