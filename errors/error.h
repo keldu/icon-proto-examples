@@ -113,17 +113,10 @@ bool error::is_type() const {
 }
 
 template <typename T>
-void register_error(std::string_view name, bool is_critical){
-	error_registry::get_or_new_error_id<T>(name, is_critical);
-}
-
-template <typename T>
 error make_error(const std::string& msg){
-	auto id = error_registry::get_error_id<T>();
+	auto id = error_registry::get_or_new_error_id<T>(T::name, T::is_critical);
 	
-	auto cat = error_registry::get_category_name(id);
-
-	return error { id, cat, msg };
+	return error { id, T::name, msg };
 }
 
 template<typename T>
